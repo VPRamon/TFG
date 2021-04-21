@@ -1,16 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /* 
  * File:   main.c
- * Author: oem
+ * Author: VPRamon
  *
- * Created on December 27, 2020, 3:11 PM
+ * Created on April 21, 2021, 4:17 PM
  */
-
 #include <stdio.h>
 #include <stdlib.h>
 //#include <unistd.h>
@@ -32,4 +26,3 @@ int main(int argc, char** argv) {
 
     return (EXIT_SUCCESS);
 }
-

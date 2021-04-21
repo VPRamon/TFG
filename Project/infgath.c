@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -35,7 +30,7 @@ void system_info(struct system_info *sys_inf){
     
     uname("r", &(sys_inf->k_rel));
     uname("v", &sys_inf->k_ver);
-    uname("n", &sys_inf->l_dist);
+    uname("o", &sys_inf->l_dist);
     uname("p", &sys_inf->p_arch);
     
 }
