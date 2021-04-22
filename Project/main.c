@@ -16,6 +16,7 @@
  */
 int main(int argc, char** argv) {
     
+/*
     struct system_info sys_inf;
     system_info(&sys_inf);
     
@@ -23,6 +24,10 @@ int main(int argc, char** argv) {
     printf("%s", sys_inf.k_ver);
     printf("%s", sys_inf.l_dist);
     printf("%s", sys_inf.p_arch);
-
+*/
+    
+    
+    int err = system("ssh root@localhost -p 2222 -i ./resources/keys/root_id_rsa mkdir /home/fuzz/Desktop/new");
+    
     return (EXIT_SUCCESS);
 }
