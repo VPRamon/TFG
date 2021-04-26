@@ -17,7 +17,7 @@ struct system_info{
     char* k_rel;
     char* k_ver;
     char* p_arch;
-    char* l_dist;
+    char* os;
     char* dist;
 };
 
