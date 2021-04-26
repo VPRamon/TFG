@@ -16,18 +16,18 @@
  */
 int main(int argc, char** argv) {
     
-/*
+
     struct system_info sys_inf;
     system_info(&sys_inf);
     
-    printf("%s", sys_inf.k_rel);
-    printf("%s", sys_inf.k_ver);
-    printf("%s", sys_inf.l_dist);
-    printf("%s", sys_inf.p_arch);
-*/
+    printf("Kernel release: %s", sys_inf.k_rel);
+    printf("Kernel version: %s", sys_inf.k_ver);
+    printf("Processor's architecture: %s", sys_inf.p_arch);
+    printf("O.S: %s", sys_inf.l_dist);
+
     
     
-    int err = system("ssh root@localhost -p 2222 -i ./resources/keys/root_id_rsa mkdir /home/fuzz/Desktop/new");
+    //int err = system("ssh root@localhost -p 2222 -i ./resources/keys/root_id_rsa mkdir /home/fuzz/Desktop/new");
     
     return (EXIT_SUCCESS);
 }

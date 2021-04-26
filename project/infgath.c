@@ -10,9 +10,7 @@
 void uname(char *flag, char **var){
    
     char *syscall = (char *)malloc(SIZE_BUFFER_UNAME);
-    
     strcpy(syscall,  "uname -");    
-    
     strcat(syscall, flag);
     
     FILE *p;
