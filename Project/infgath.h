@@ -22,7 +22,7 @@ struct system_info{
 };
 
 
-void system_info(struct system_info *sys_inf);
-
+void get_system_info(struct system_info *sys_inf);
+void display_network_info();
 
 #endif /* INFGATH_H */
