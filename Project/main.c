@@ -33,5 +33,13 @@ int main(int argc, char** argv) {
     
     scan_installed_tools();
     
+    
+    /* To do list:
+     * gdb tools
+     * loaded modules
+     * software versions
+     * ...
+     */
+    
     return (EXIT_SUCCESS);
 }
