@@ -18,7 +18,7 @@ void cmd(char *input, char **output){
 
 
 void get_system_info(struct system_info *sys_inf){
-    cmd("uname -r", &(sys_inf->k_rel));
+    cmd("uname -r", &sys_inf->k_rel);
     cmd("uname -v", &sys_inf->k_ver);
     cmd("uname -p", &sys_inf->p_arch);
     cmd("uname -o", &sys_inf->os);
@@ -40,4 +40,36 @@ void display_network_info(){
 
 void scan_installed_tools(){
     // "which awk perl python ruby gcc cc vi vim nmap find netcat nc wget tftp ftp 2>/dev/null"
+
+    const char tools[NUMBER_OF_TOOLS][MAX_STRING_SIZE] =
+    {   
+        "awk",
+        "perl",
+        "python",
+        "ruby",
+        "gcc",
+        "cc",
+        "vi",
+        "vim",
+        "nmap",
+        "find",
+        "netcat",
+        "nc",
+        "wget",
+        "tftp",
+        "ftp",
+    };
+    
+    for(int i=0;i<NUMBER_OF_TOOLS;i++)
+        printf("%s\n",tools[i]);
+    
+    /*
+    char* out;
+    cmd("which awk", &out);
+    if(strcmp(out, "")){
+        printf("output: %s", out);
+    }else{
+        printf("no output");
+    }
+     */
 }
