@@ -11,7 +11,7 @@
 //#include <unistd.h>
 
 #include "infgath.h"
-
+#include "lists.h"
 /*
  * 
  */
@@ -31,13 +31,30 @@ int main(int argc, char** argv) {
     
     //int err = system("ssh root@localhost -p 2222 -i ./resources/keys/root_id_rsa mkdir /home/fuzz/Desktop/new");
     
-    scan_installed_tools();
+    //scan_installed_tools();
     
     
+    list *l = new_list();
+    
+    l->push(1,l);
+    l->push(2,l);
+    l->push(7,l);
+    l->pop(l);
+    l->push(6,l);
+    l->push(5,l);
+    element *p = l->first_element;
+    while(p != NULL){
+        printf("%d\n",(int)p->content);
+        p = p->next;
+    }
+    
+    //l->first_element = (element *) malloc(sizeof(element));
     /* To do list:
      * gdb tools
      * loaded modules
      * software versions
+     * Hardware devices
+     * running remotely
      * ...
      */
     

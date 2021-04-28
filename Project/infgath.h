@@ -22,7 +22,7 @@ struct system_info{
     char* os;
     char* dist;
 };
-
+/*
 struct tool{
     char name[MAX_STRING_SIZE];
     bool is_installed = false;
@@ -45,7 +45,7 @@ const char tools[NUMBER_OF_TOOLS][MAX_STRING_SIZE] =
         "wget",
         "tftp",
         "ftp",
-    };
+    };*/
 
 void get_system_info(struct system_info *sys_inf);
 void display_network_info();
