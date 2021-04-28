@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,7 +13,7 @@ element *new_element(void *content){
     return el;
 }
 
-void function_push(void *content, list *l){
+void push(list *l, void *content){
     element *el = new_element(content);
     if(l->len == 0){
         l->first_element = el;
@@ -32,7 +27,7 @@ void function_push(void *content, list *l){
     }
 }
 
-void function_pop(list *l){  
+void pop(list *l){  
     if(l->len == 1){
         free(l->last_element);
         l->last_element = NULL;
@@ -54,8 +49,6 @@ list *new_list(){
     l->last_element = NULL;
     l->len = 0;
     
-    l->push = &function_push;
-    l->pop  = &function_pop;
     
     return l;
 }
