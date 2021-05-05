@@ -15,6 +15,11 @@
 /*
  * 
  */
+
+
+
+
+
 int main(int argc, char** argv) {
     
     /*
@@ -35,7 +40,6 @@ int main(int argc, char** argv) {
     scan_installed_tools(tools);
   
     element *p = tools->first_element;
-    
     while(p != NULL){
         tool *t = p->content;
         printf("name: %s,\tdir: %s\n",t->name, t->dir);
@@ -43,7 +47,16 @@ int main(int argc, char** argv) {
     }
     */
     
+    /*list *devices = new_list();
+    scan_active_devices(devices);
     
+    element *p = devices->first_element;
+    while(p != NULL){
+        struct device *d = p->content;
+        display_device(*d);
+        p = p->next;
+    }*/
+
     /* To do list:
      * gdb tools
      * loaded modules
@@ -53,6 +66,6 @@ int main(int argc, char** argv) {
      * exploits DB
      * ...
      */
-    
+
     return (EXIT_SUCCESS);
 }

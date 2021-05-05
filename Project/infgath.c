@@ -17,7 +17,6 @@ void cmd(char *input, char **output){
     }
 }
 
-
 void get_system_info(struct system_info *sys_inf){
     cmd("uname -r", &sys_inf->k_rel);
     cmd("uname -v", &sys_inf->k_ver);
@@ -71,4 +70,95 @@ void scan_installed_tools(list *tools){
         push(tools, &tools_struct[i]);
     }
         
+}
+
+
+void display_device(struct device dev){
+  
+    switch (dev.st_mode & S_IFMT) {
+        case S_IFBLK:  printf("b "); break;
+        case S_IFCHR:  printf("c "); break; 
+        case S_IFDIR:  printf("d "); break; //It's a (sub)directory 
+        case S_IFIFO:  printf("p "); break; //fifo
+        case S_IFLNK:  printf("l "); break; //Sym link
+        case S_IFSOCK: printf("s "); break;
+        //Filetype isn't identified
+        default:       printf("- "); break;
+            }
+    //[permissions]
+    //Same for the permissions, we have to test the different rights
+    //READ http://linux.die.net/man/2/chmod 
+    printf( (dev.st_mode & S_IRUSR) ? " r" : " -");
+    printf( (dev.st_mode & S_IWUSR) ? "w" : "-");
+    printf( (dev.st_mode & S_IXUSR) ? "x" : "-");
+    printf( (dev.st_mode & S_IRGRP) ? "r" : "-");
+    printf( (dev.st_mode & S_IWGRP) ? "w" : "-");
+    printf( (dev.st_mode & S_IXGRP) ? "x" : "-");
+    printf( (dev.st_mode & S_IROTH) ? "r" : "-");
+    printf( (dev.st_mode & S_IWOTH) ? "w" : "-");
+    printf( (dev.st_mode & S_IXOTH) ? "x" : "-");
+
+    // [number of hard links]
+    printf("\t%ld ", dev.st_nlink);
+
+    //[owner] 
+    printf("\t%s ", dev.pw_name);
+
+    //[group]
+    printf("\t%s ", dev.gr_name);
+
+    //[size in bytes] [filename]
+    printf("%zu", dev.st_size);
+    printf(" %s", dev.name);    
+    printf("\n");  
+}
+
+
+
+void scan_active_devices(list *devices){
+    
+    //The file: when a file is found in the directory readdir loop, it's going to be called this way.
+    struct dirent *dev;
+
+    //Creating a placeholder for the string. 
+    //We create this so later it can be properly adressed.
+    //It's reasonnable here to consider a 512 maximum lenght, as we're just going to use it to display a path to a file, 
+    //but we could have used a strlen/malloc combo and declared a simple buf[] at this moment
+    char buf[512];
+
+    //It's time to assign thedirectory to the argument: this way the user will be able to browse any folder simply by mentionning it 
+    //when launching the lsd program.
+    DIR *thedirectory = opendir("/dev");
+
+    //If a file is found (readdir returns a NOT NULL value), the loop starts/keep going until it has listed all of them. 
+    while((dev = readdir(thedirectory)) != NULL) 
+    {   
+        //We sprint "thedirectory/dev" which defines the path to our file 
+        sprintf(buf, "%s/%s", "/dev", dev->d_name);
+
+        //The stat: It's how we'll retrieve the stats associated to the file. 
+        //Then we use stat function in order to retrieve information about the file
+        struct stat thestat;
+        stat(buf, &thestat);
+                
+        //will be used to determine the file owner & group
+        struct passwd *tf = getpwuid(thestat.st_uid);
+        struct group *gf = getgrgid(thestat.st_gid);
+                
+        struct device *d = (struct device *) malloc(sizeof(struct device));
+        
+        //d = (struct device){NULL, thestat.st_mode, thestat.st_nlink, thestat.st_size, tf->pw_name, gf->gr_name};
+        //d = (struct device){NULL, NULL, NULL, NULL, NULL, NULL};
+
+        memcpy(d->name, dev->d_name, sizeof(char)*256);
+        d->st_mode = thestat.st_mode;
+        d->st_nlink = thestat.st_nlink;
+        d->st_size = thestat.st_size;
+        memcpy(d->pw_name, tf->pw_name, sizeof(char)*50);
+        memcpy(d->gr_name, gf->gr_name, sizeof(char)*50);
+        
+        push(devices, d);
+    }
+    closedir(thedirectory);
+    
 }

@@ -29,16 +29,20 @@ void push(list *l, void *content){
 
 void pop(list *l){  
     if(l->len == 1){
+        free(l->last_element->content);
         free(l->last_element);
+        l->last_element->content = NULL;
         l->last_element = NULL;
         l->first_element = NULL;
         l->len--;
     } if(l->len > 1){
         element *last = l->last_element;
         element *prev = last->prev;
+        free(last->content);
+        free(last);
         prev->next = NULL;
         l->last_element = prev;
-        free(last);
+        
         l->len--;
     }
 }

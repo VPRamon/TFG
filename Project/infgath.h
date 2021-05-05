@@ -8,6 +8,16 @@
 #ifndef INFGATH_H
 #define INFGATH_H
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <dirent.h>
+#include <time.h>
+#include <pwd.h>
+#include <grp.h>
+
 #include "lists.h"
 
 #define ERR_CODE_PROCESS_FAIL "-1"
@@ -31,8 +41,20 @@ typedef struct tool_struct{
     char dir[MAX_STRING_SIZE];
 }tool;
 
+struct device{
+    char name[256];
+    mode_t st_mode;
+    nlink_t st_nlink;
+    off_t st_size;
+    char pw_name[50];
+    char gr_name[50];
+};
+
 
 void get_system_info(struct system_info *sys_inf);
 void display_network_info();
 void scan_installed_tools();
+void scan_active_devices(list *devices);
+void display_device(struct device dev);
+    
 #endif /* INFGATH_H */
