@@ -1,41 +1,172 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "infgath.h"
 
-
-void cmd(char *input, char **output){
+void cmd(char *input, char **output, int size){
     FILE *p;
     p = popen(input,"r");    
     if( p == NULL){
         puts("Unable to open process");
     }else{
-        *output = (char *)malloc(SIZE_SYS_INFO);
-        fgets(*output, SIZE_SYS_INFO, p);        
+        *output = (char *)malloc(sizeof(char)*size);
+        fgets(*output, sizeof(char)*size, p);        
         pclose(p);
     }
 }
 
-void get_system_info(struct system_info *sys_inf){
-    cmd("uname -r", &sys_inf->k_rel);
-    cmd("uname -v", &sys_inf->k_ver);
-    cmd("uname -p", &sys_inf->p_arch);
-    cmd("uname -o", &sys_inf->os);
-    cmd("cat /etc/issue", &sys_inf->dist);
+struct cpu_flags get_cpu_flags(){
+    FILE * fp;
+    char * line = NULL;
+    
+    fp = fopen("/proc/cpuinfo", "r");
+    if (fp == NULL)
+        exit(EXIT_FAILURE);
+    
+    char name[16], buffer[1024];
+    
+    while(fscanf(fp, "%[^:]:%[^\n]\n", name, buffer)!=EOF){
+        if(!strncmp(name,"flags", sizeof("flags")-1 ))
+            break;
+    }
+    
+    struct cpu_flags flags = {false, false, false, false, false, false, false, false, false};
+    
+    char * flag = strtok(buffer, " ");
+    while( flag != NULL ) {
+        if(!strncmp(flag, "smep", sizeof("smep")-1))
+            flags.smep = true;
+        else if(!strncmp(flag, "smap", sizeof("smap")-1))
+            flags.smap = true;
+        else if(!strncmp(flag, "mpx", sizeof("mpx")-1))
+            flags.mpx = true;
+        else if(!strncmp(flag, "rtm", sizeof("rtm")-1))
+            flags.rtm = true;
+        else if(!strncmp(flag, "retpoline", sizeof("retpoline")-1))
+            flags.retpoline = true;
+        else if(!strncmp(flag, "retpoline_amd", sizeof("retpoline_amd")-1))
+            flags.retpoline_amd = true;
+        else if(!strncmp(flag, "pti", sizeof("pti")-1))
+            flags.pti = true;
+        else if(!strncmp(flag, "misalignsse", sizeof("misalignsse")-1))
+            flags.misalignsse = true;
+        else if(!strncmp(flag, "svm", sizeof("svm")-1))
+            flags.svm = true;
+        
+        flag = strtok(NULL, " ");
+    }
+    fclose(fp);
+    return flags;
 }
 
-void display_network_info(){
-    printf("\n## Network Information ##\n");
+struct cpu_bugs get_cpu_bugs(){
+    FILE * fp;
+    char * line = NULL;
     
-    printf("\n --> Interfaces:\n\n");
-    system("/sbin/ifconfig -a");
+    fp = fopen("/proc/cpuinfo", "r");
+    if (fp == NULL)
+        exit(EXIT_FAILURE);
     
-    printf("\n --> Routes:\n\n");
-    system("route");
+    char name[16], buffer[1024];
     
-    printf("\n --> Netstat:\n\n");
-    system("netstat -antup | grep -v 'TIME_WAIT'");
+    while(fscanf(fp, "%[^:]:%[^\n]\n", name, buffer)!=EOF){
+        if(!strncmp(name,"bugs", sizeof("bugs")-1 ))
+            break;
+    }
+    
+    struct cpu_bugs bugs = {false, false, false, false, false, false, false, false, false, 
+                            false, false, false, false, false, false, false, false, false};
+    
+    char * bug = strtok(buffer, " ");
+    while( bug != NULL ) {
+        if(!strncmp(bug, "f00f", sizeof("f00f")-1))
+            bugs.f00f = true;
+        else if(!strncmp(bug, "fdiv", sizeof("fdiv")-1))
+            bugs.fdiv = true;
+        else if(!strncmp(bug, "coma", sizeof("coma")-1))
+            bugs.coma = true;
+        else if(!strncmp(bug, "amd_tlb_mmatch", sizeof("amd_tlb_mmatch")-1))
+            bugs.amd_tlb_mmatch = true;
+        else if(!strncmp(bug, "amd_apic_c1e", sizeof("amd_apic_c1e")-1))
+            bugs.amd_apic_c1e = true;
+        else if(!strncmp(bug, "_11ap", sizeof("_11ap")-1))
+            bugs._11ap = true;
+        else if(!strncmp(bug, "fxsave_leak", sizeof("fxsave_leak")-1))
+            bugs.fxsave_leak = true;
+        else if(!strncmp(bug, "clflush_monitor", sizeof("clflush_monitor")-1))
+            bugs.clflush_monitor = true;
+        else if(!strncmp(bug, "sysret_ss_attrs", sizeof("sysret_ss_attrs")-1))
+            bugs.sysret_ss_attrs = true;
+        else if(!strncmp(bug, "espfix", sizeof("espfix")-1))
+            bugs.espfix = true;
+        else if(!strncmp(bug, "null_seg", sizeof("null_seg")-1))
+            bugs.null_seg = true;
+        else if(!strncmp(bug, "swapgs_fence", sizeof("swapgs_fence")-1))
+            bugs.swapgs_fence = true;
+        else if(!strncmp(bug, "monitor", sizeof("monitor")-1))
+            bugs.monitor = true;
+        else if(!strncmp(bug, "amd_e400", sizeof("amd_e400")-1))
+            bugs.amd_e400 = true;
+        else if(!strncmp(bug, "cpu_meltdown", sizeof("cpu_meltdown")-1))
+            bugs.cpu_meltdown = true;
+        else if(!strncmp(bug, "spectre_v1", sizeof("spectre_v1")-1))
+            bugs.spectre_v1 = true;
+        else if(!strncmp(bug, "spectre_v2", sizeof("spectre_v2")-1))
+            bugs.spectre_v2 = true;
+        else if(!strncmp(bug, "spec_store_bypass", sizeof("spec_store_bypass")-1))
+            bugs.spec_store_bypass = true;
+        
+        bug = strtok(NULL, " ");
+    }
+    fclose(fp);
+    return bugs;
+}
+
+struct sys_inf *get_system_info(){
+    struct sys_inf *system_info = (struct sys_inf *)malloc(sizeof(struct sys_inf));
+    struct utsname *u_name = (struct utsname *)malloc(sizeof(struct utsname));
+    int r = uname(u_name);
+    if(r == -1)
+    {
+            fprintf(stderr,"%s:uname(2)\n",strerror(errno));
+            exit (1);
+    }
+    system_info->u_name = u_name;
+    
+    char *tmp;
+    char tmp1[50], tmp2[100];
+    
+    // It works whe debugging
+    int x;
+    cmd("nproc", &tmp, 3);
+    sscanf(tmp, "%d", &x);
+    system_info->_cpu.num_of_cpus = x;
+
+    cmd("lscpu | grep -E '^Core'", &tmp, 100);
+    sscanf(tmp, "%[^:]:%s", tmp1, tmp2);
+    system_info->_cpu.num_of_cores = atoi(tmp2);
+
+    cmd("lscpu | grep -E '^Thread'", &tmp, 100);
+    sscanf(tmp, "%[^:]:%s", tmp1, tmp2);
+    system_info->_cpu.threadsXcore = atoi(tmp2);
+    
+    cmd("lscpu | grep -E '^Socket'", &tmp, 100);
+    sscanf(tmp, "%[^:]:%s", tmp1, tmp2);
+    system_info->_cpu.num_of_sockets = atoi(tmp2);
+    
+    cmd("lscpu | grep -E '^Architecture'", &tmp, 100);
+    sscanf(tmp, "%[^:]:\t%[^\n]\n", tmp1, tmp2);
+    memcpy(system_info->_cpu.arch, tmp2, 8);
+    
+    cmd("lscpu | grep -E '^Model name'", &tmp, 100);
+    sscanf(tmp, "%[^:]:\t%[^\n]\n", tmp1, tmp2);
+    memcpy(system_info->_cpu.model, tmp2, 100);
+    
+    system_info->_cpu.flags = get_cpu_flags();
+    system_info->_cpu.bugs  = get_cpu_bugs();
+    free(tmp);
+    
+    return system_info;
 }
 
 void scan_installed_tools(list *tools){
@@ -62,7 +193,7 @@ void scan_installed_tools(list *tools){
     char* out;    
     for(int i=0;i<NUMBER_OF_TOOLS;i++){
         sprintf(which, "which %s", tools_struct[i].name);
-        cmd(which, &out);
+        cmd(which, &out, MAX_STRING_SIZE);
         if(strcmp(out, "")){
             tools_struct[i].is_installed = true;
             strcpy(tools_struct[i].dir, out);
@@ -72,84 +203,24 @@ void scan_installed_tools(list *tools){
         
 }
 
-
-void display_device(struct device dev){
-  
-    switch (dev.st_mode & S_IFMT) {
-        case S_IFBLK:  printf("b "); break;
-        case S_IFCHR:  printf("c "); break; 
-        case S_IFDIR:  printf("d "); break; //It's a (sub)directory 
-        case S_IFIFO:  printf("p "); break; //fifo
-        case S_IFLNK:  printf("l "); break; //Sym link
-        case S_IFSOCK: printf("s "); break;
-        //Filetype isn't identified
-        default:       printf("- "); break;
-            }
-    //[permissions]
-    //Same for the permissions, we have to test the different rights
-    //READ http://linux.die.net/man/2/chmod 
-    printf( (dev.st_mode & S_IRUSR) ? " r" : " -");
-    printf( (dev.st_mode & S_IWUSR) ? "w" : "-");
-    printf( (dev.st_mode & S_IXUSR) ? "x" : "-");
-    printf( (dev.st_mode & S_IRGRP) ? "r" : "-");
-    printf( (dev.st_mode & S_IWGRP) ? "w" : "-");
-    printf( (dev.st_mode & S_IXGRP) ? "x" : "-");
-    printf( (dev.st_mode & S_IROTH) ? "r" : "-");
-    printf( (dev.st_mode & S_IWOTH) ? "w" : "-");
-    printf( (dev.st_mode & S_IXOTH) ? "x" : "-");
-
-    // [number of hard links]
-    printf("\t%ld ", dev.st_nlink);
-
-    //[owner] 
-    printf("\t%s ", dev.pw_name);
-
-    //[group]
-    printf("\t%s ", dev.gr_name);
-
-    //[size in bytes] [filename]
-    printf("%zu", dev.st_size);
-    printf(" %s", dev.name);    
-    printf("\n");  
-}
-
-
-
 void scan_active_devices(list *devices){
     
-    //The file: when a file is found in the directory readdir loop, it's going to be called this way.
     struct dirent *dev;
-
-    //Creating a placeholder for the string. 
-    //We create this so later it can be properly adressed.
-    //It's reasonnable here to consider a 512 maximum lenght, as we're just going to use it to display a path to a file, 
-    //but we could have used a strlen/malloc combo and declared a simple buf[] at this moment
     char buf[512];
-
-    //It's time to assign thedirectory to the argument: this way the user will be able to browse any folder simply by mentionning it 
-    //when launching the lsd program.
     DIR *thedirectory = opendir("/dev");
 
-    //If a file is found (readdir returns a NOT NULL value), the loop starts/keep going until it has listed all of them. 
     while((dev = readdir(thedirectory)) != NULL) 
     {   
-        //We sprint "thedirectory/dev" which defines the path to our file 
         sprintf(buf, "%s/%s", "/dev", dev->d_name);
 
-        //The stat: It's how we'll retrieve the stats associated to the file. 
-        //Then we use stat function in order to retrieve information about the file
         struct stat thestat;
         stat(buf, &thestat);
                 
-        //will be used to determine the file owner & group
         struct passwd *tf = getpwuid(thestat.st_uid);
         struct group *gf = getgrgid(thestat.st_gid);
                 
         struct device *d = (struct device *) malloc(sizeof(struct device));
         
-        //d = (struct device){NULL, thestat.st_mode, thestat.st_nlink, thestat.st_size, tf->pw_name, gf->gr_name};
-        //d = (struct device){NULL, NULL, NULL, NULL, NULL, NULL};
-
         memcpy(d->name, dev->d_name, sizeof(char)*256);
         d->st_mode = thestat.st_mode;
         d->st_nlink = thestat.st_nlink;
@@ -160,5 +231,63 @@ void scan_active_devices(list *devices){
         push(devices, d);
     }
     closedir(thedirectory);
+}
+
+struct proc *get_proccessor_info(unsigned int num_of_proc){
+    FILE * fp;
+    char * line = NULL;
     
+    fp = fopen("/proc/cpuinfo", "r");
+    if (fp == NULL)
+        exit(EXIT_FAILURE);
+    
+    struct proc *processors = (struct proc *)malloc(sizeof(struct proc)*num_of_proc);
+    
+    int pos[num_of_proc];
+    for(int i=0; i<num_of_proc;i ++){
+        pos[i] = -1;
+        processors[i].num_threads = 0;
+    }
+    
+    struct proc temp_proc; temp_proc.num_threads = 0;
+    char buff[1024];
+    char property[50];
+    int id=-1;
+    int i;
+    while(fscanf(fp, "%[^:]:%[^\n]\n", property, buff)!=EOF){
+        if(!strncmp(property,"processor", sizeof("processor")-1 )){
+            if(id >= 0){
+                for(i=0;i<num_of_proc;i++)
+                    if(pos[i] == id || pos[i] == -1) break;
+                pos[i] = id;
+                if(processors[i].num_threads == 0)
+                    processors[i] = temp_proc;
+                processors[i].num_threads += 1;
+            }
+        }
+        else if(!strncmp(property,"core id", sizeof("core id")-1 ))
+            temp_proc.core_id = id = atoi(buff);
+        
+        else if(!strncmp(property,"cpu MHz", sizeof("cpu MHz")-1 ))
+            temp_proc.cpu_MHz = atof(buff);
+        
+        else if(!strncmp(property,"cache size", sizeof("cache size")-1 ))
+            strncpy(processors[id].cache, buff, 16);
+        
+        /*else if(!strncmp(property,"processor", sizeof("processor")-1 ))
+        else if(!strncmp(property,"processor", sizeof("processor")-1 ))
+        else if(!strncmp(property,"processor", sizeof("processor")-1 ))*/
+    }
+    
+    if(id >= 0){
+        for(i=0;i<num_of_proc;i++)
+            if(pos[i] == id || pos[i] == -1) break;
+        pos[i] = id;
+        if(processors[i].num_threads == 0)
+            processors[i] = temp_proc;
+        processors[i].num_threads += 1;
+    }
+    
+    fclose(fp);
+    return processors;
 }
