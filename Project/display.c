@@ -3,7 +3,8 @@
 #include <string.h>
 
 #include "display.h"
-# include "infgath.h"
+#include "infgath.h"
+#include "utils.h"
 
 void display_sys_info(struct sys_inf *system_info){
     printf( "##########################################\n"
@@ -85,16 +86,27 @@ void display_sys_info(struct sys_inf *system_info){
 }
 
 void display_network_info(){
-    printf("\n## Network Information ##\n");
+    printf("##########################################\n"
+           "################  NETWORK  ###############\n"
+           "##########################################\n");
+    char* out;
+    cmd("which ifconfig", &out, MAX_STRING_SIZE);
+    if(strcmp(out, "")){
+        printf("\n[*] Interfaces:\n\n");
+        system("/sbin/ifconfig -a");
+    }
     
-    printf("\n --> Interfaces:\n\n");
-    system("/sbin/ifconfig -a");
+    cmd("which route", &out, MAX_STRING_SIZE);
+    if(strcmp(out, "")){
+        printf("\n[*] Routes:\n\n");
+        system("route");
+    }
     
-    printf("\n --> Routes:\n\n");
-    system("route");
-    
-    printf("\n --> Netstat:\n\n");
-    system("netstat -antup | grep -v 'TIME_WAIT'");
+    cmd("which netstat", &out, MAX_STRING_SIZE);
+    if(strcmp(out, "")){
+        printf("\n[*] Netstat:\n\n");
+        system("netstat -antup | grep -v 'TIME_WAIT'");
+    }
 }
 
 void display_device(struct device dev){
@@ -118,25 +130,18 @@ void display_device(struct device dev){
     printf( (dev.st_mode & S_IROTH) ? "r" : "-");
     printf( (dev.st_mode & S_IWOTH) ? "w" : "-");
     printf( (dev.st_mode & S_IXOTH) ? "x" : "-");
-
-    // [number of hard links]
-    printf("\t%ld ", dev.st_nlink);
-
-    // [owner] 
-    printf("\t%s ", dev.pw_name);
-
-    // [group]
-    printf("\t%s ", dev.gr_name);
-
-    // [size in bytes]
-    printf("%zu", dev.st_size);
     
-    // [device name]
-    printf(" %s", dev.name);    
-    printf("\n");  
+    printf("\t%lu ", dev.st_nlink); // [number of hard links]
+    printf("\t%s ", dev.pw_name);   // [owner] 
+    printf("\t%s ", dev.gr_name);   // [group]
+    printf("%ld", dev.st_size); // [size in bytes]
+    printf(" %s\n", dev.name);    // [device name]
 }
 
 void display_devices(list *devices){
+    printf( "##########################################\n"
+            "################  SYSTEM  ################\n"
+            "##########################################\n\n");
     element *p = devices->first_element;
     while(p != NULL){
         struct device *d = p->content;
@@ -149,9 +154,8 @@ void display_installed_tools(list *tools){
     element *p = tools->first_element;
     while(p != NULL){
         tool *t = p->content;
-        if(t->is_installed){
+        if(t->is_installed)
             printf("name: %s,\tdir: %s",t->name, t->dir);
-        }
         p = p->next;
     }
 }

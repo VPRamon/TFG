@@ -30,6 +30,21 @@
 #define MAX_STRING_SIZE 20
 #define N_KNOWN_BUGS 18
 #define N_SEC_FLAGS 9
+
+// TOOLS
+#define awk 0
+#define perl 1
+#define python 2
+#define ruby
+#define gcc
+#define cc
+#define vi
+#define vim
+#define nmap
+#define find
+
+
+
 struct proc{
     unsigned int core_id;
     char cache[16];

@@ -10,10 +10,19 @@
 
 #include "infgath.h"
 
+#define MENU_OPTIONS 7
+#define EXIT_MENU -1
+#define INVALID_INPUT -2
+
 #define SYS_INFO 0
-#define FUZZER 1
-#define DEBUGGER 2
-#define EXPLOIT 3
+#define NET_INFO 1
+#define RUNNING_MODULES 2
+#define RUNNING_DEVICES 3
+#define FUZZER 4
+#define DEBUGGER 5
+#define EXPLOIT 6
+
+
 
 void display_sys_info(struct sys_inf *system_info);
 void display_network_info();

@@ -2,18 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "infgath.h"
+#include "utils.h"
 
-void cmd(char *input, char **output, int size){
-    FILE *p;
-    p = popen(input,"r");    
-    if( p == NULL){
-        puts("Unable to open process");
-    }else{
-        *output = (char *)malloc(sizeof(char)*size);
-        fgets(*output, sizeof(char)*size, p);        
-        pclose(p);
-    }
-}
 
 struct cpu_flags get_cpu_flags(){
     FILE * fp;

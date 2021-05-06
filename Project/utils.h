@@ -14,7 +14,9 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+void cmd(char *input, char **output, int size);
 int valid_input(char input, int max);
+
 
 #endif /* UTILS_H */
 
