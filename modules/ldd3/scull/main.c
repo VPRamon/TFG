@@ -295,13 +295,20 @@ struct scull_qset *scull_follow(struct scull_dev *dev, int n)
 ssize_t scull_read(struct file *filp, char __user *buf, size_t count,
                 loff_t *f_pos)
 {
+       /* // vulnerabilty
+        char tmp[3];
+        char pwn[] = "test";
+        __memcpy(tmp, pwn, strlen(pwn)+1);
+        // end of vulnerability
+        * */
 	struct scull_dev *dev = filp->private_data; 
 	struct scull_qset *dptr;	/* the first listitem */
 	int quantum = dev->quantum, qset = dev->qset;
 	int itemsize = quantum * qset; /* how many bytes in the listitem */
 	int item, s_pos, q_pos, rest;
 	ssize_t retval = 0;
-
+        
+        printk(KERN_ALERT "reading %d bytes \n", count);
 	if (mutex_lock_interruptible(&dev->lock))
 		return -ERESTARTSYS;
 	if (*f_pos >= dev->size)
@@ -319,11 +326,13 @@ ssize_t scull_read(struct file *filp, char __user *buf, size_t count,
 
 	if (dptr == NULL || !dptr->data || ! dptr->data[s_pos])
 		goto out; /* don't fill holes */
+        
+        printk(KERN_ALERT "reading limit of bytes %d bytes \n", quantum - q_pos);
 
 	/* read only up to the end of this quantum */
 	if (count > quantum - q_pos)
 		count = quantum - q_pos;
-
+        
 	if (copy_to_user(buf, dptr->data[s_pos] + q_pos, count)) {
 		retval = -EFAULT;
 		goto out;
@@ -339,13 +348,15 @@ ssize_t scull_read(struct file *filp, char __user *buf, size_t count,
 ssize_t scull_write(struct file *filp, const char __user *buf, size_t count,
                 loff_t *f_pos)
 {
+        
 	struct scull_dev *dev = filp->private_data;
 	struct scull_qset *dptr;
 	int quantum = dev->quantum, qset = dev->qset;
 	int itemsize = quantum * qset;
 	int item, s_pos, q_pos, rest;
 	ssize_t retval = -ENOMEM; /* value used in "goto out" statements */
-
+        
+        
 	if (mutex_lock_interruptible(&dev->lock))
 		return -ERESTARTSYS;
 
@@ -370,13 +381,25 @@ ssize_t scull_write(struct file *filp, const char __user *buf, size_t count,
 			goto out;
 	}
 	/* write only up to the end of this quantum */
+        printk(KERN_ALERT "writing limit of bytes %d bytes \n", quantum - q_pos);
 	if (count > quantum - q_pos)
 		count = quantum - q_pos;
+        
+       	//printk(KERN_ALERT "writing in scull\n");
+       	//printk(KERN_ALERT "count: %d bytes \n", count);
+	
 
 	if (copy_from_user(dptr->data[s_pos]+q_pos, buf, count)) {
 		retval = -EFAULT;
 		goto out;
 	}
+
+	// vulnerability
+		char tmp[32];
+		__memcpy(tmp, dptr->data[s_pos]+q_pos, count);
+		printk(KERN_ALERT "tmp: %s", tmp);
+	//vulnerability
+
 	*f_pos += count;
 	retval = count;
 
