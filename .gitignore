@@ -1039,3 +1039,4 @@ dkms.conf
 
 *.img
 *.iso
+*.VM
