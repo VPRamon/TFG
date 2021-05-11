@@ -126,16 +126,14 @@ struct sys_inf *get_system_info(){
     char *tmp;
     char tmp1[50], tmp2[100];
     
-    // It works whe debugging
-    int x;
-    cmd("nproc", &tmp, 3);
-    sscanf(tmp, "%d", &x);
-    system_info->_cpu.num_of_cpus = x;
-
+    cmd("lscpu | grep '^CPU(s)'", &tmp, 100);
+    sscanf(tmp, "%[^:]:%s", tmp1, tmp2);
+    system_info->_cpu.num_of_cpus = atoi(tmp2);
+    
     cmd("lscpu | grep -E '^Core'", &tmp, 100);
     sscanf(tmp, "%[^:]:%s", tmp1, tmp2);
     system_info->_cpu.num_of_cores = atoi(tmp2);
-
+    
     cmd("lscpu | grep -E '^Thread'", &tmp, 100);
     sscanf(tmp, "%[^:]:%s", tmp1, tmp2);
     system_info->_cpu.threadsXcore = atoi(tmp2);
