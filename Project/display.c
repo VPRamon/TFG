@@ -90,19 +90,19 @@ void display_network_info(){
            "################  NETWORK  ###############\n"
            "##########################################\n");
     char* out;
-    cmd("which ifconfig", &out, MAX_STRING_SIZE);
+    system_cmd("which ifconfig", &out, MAX_STRING_SIZE);
     if(strcmp(out, "")){
         printf("\n[*] Interfaces:\n\n");
         system("/sbin/ifconfig -a");
     }
     
-    cmd("which route", &out, MAX_STRING_SIZE);
+    system_cmd("which route", &out, MAX_STRING_SIZE);
     if(strcmp(out, "")){
         printf("\n[*] Routes:\n\n");
         system("route");
     }
     
-    cmd("which netstat", &out, MAX_STRING_SIZE);
+    system_cmd("which netstat", &out, MAX_STRING_SIZE);
     if(strcmp(out, "")){
         printf("\n[*] Netstat:\n\n");
         system("netstat -antup | grep -v 'TIME_WAIT'");

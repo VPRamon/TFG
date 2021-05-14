@@ -6,7 +6,7 @@
 
 
 
-void cmd(char *input, char **output, int size){
+void system_cmd(char *input, char **output, int size){
     FILE *p;
     p = popen(input,"r");    
     if( p == NULL){
@@ -27,3 +27,11 @@ int valid_input(char input, int max){
         return EXIT_MENU;
     return INVALID_INPUT;
 }
+
+int getRandom(int lower, int upper)
+{
+    srand(time(0));
+    return (rand() % (upper - lower + 1)) + lower;
+}
+
+

@@ -43,7 +43,10 @@
 #define nmap
 #define find
 
-
+struct VM{
+    char root_ssh_key[100];
+    char kernel[100];
+};
 
 struct proc{
     unsigned int core_id;

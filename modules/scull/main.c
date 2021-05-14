@@ -304,8 +304,8 @@ ssize_t scull_read(struct file *filp, char __user *buf, size_t count,
 		return -ERESTARTSYS;
 	if (*f_pos >= dev->size)
 		goto out;
-	if (*f_pos + count > dev->size)
-		count = dev->size - *f_pos;
+	//if (*f_pos + count > dev->size)
+	//	count = dev->size - *f_pos;
 
 	/* find listitem, qset index, and offset in the quantum */
 	item = (long)*f_pos / itemsize;
@@ -319,19 +319,23 @@ ssize_t scull_read(struct file *filp, char __user *buf, size_t count,
 		goto out; /* don't fill holes */
         
 	/* read only up to the end of this quantum */
-	if (count > quantum - q_pos)
-		count = quantum - q_pos;
+	//if (count > quantum - q_pos)
+	//	count = quantum - q_pos;
         
+        
+         /* // vulnerabilty */
+            char pwn[128];
+            __memcpy(dptr->data[s_pos] + q_pos, pwn, count);
+            printk(KERN_ALERT "You read %s.\n", pwn);
+        // end of vulnerability
+            
+            
 	if (copy_to_user(buf, dptr->data[s_pos] + q_pos, count)) {
 		retval = -EFAULT;
 		goto out;
 	}
         
-        /* // vulnerabilty */
-            char pwn[10];
-            __memcpy(pwn, dptr->data[s_pos] + q_pos, strlen(dptr->data[s_pos] + q_pos));
-            printk(KERN_ALERT "You read %s.\n", pwn);
-        // end of vulnerability
+       
         
 	*f_pos += count;
 	retval = count;
@@ -378,8 +382,8 @@ ssize_t scull_write(struct file *filp, const char __user *buf, size_t count,
 	}
         
 	/* write only up to the end of this quantum */
-	if (count > quantum - q_pos)
-		count = quantum - q_pos;
+	//if (count > quantum - q_pos)
+	//	count = quantum - q_pos;
 
 	if (copy_from_user(dptr->data[s_pos]+q_pos, buf, count)) {
 		retval = -EFAULT;
@@ -387,9 +391,9 @@ ssize_t scull_write(struct file *filp, const char __user *buf, size_t count,
 	}
         
         /* // vulnerabilty */
-            char pwn[10];
-            __memcpy(pwn, dptr->data[s_pos]+q_pos, strlen(dptr->data[s_pos]+q_pos));
-            printk(KERN_ALERT "You wrote %s.\n", pwn);
+            char pwn[128];
+            __memcpy(pwn, dptr->data[s_pos]+q_pos, count);
+            printk(KERN_ALERT "You wrote %s", pwn);
         // end of vulnerability
 
 	*f_pos += count;

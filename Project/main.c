@@ -8,12 +8,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 //#include <unistd.h>
-
+#include <string.h>
 
 #include "infgath.h"
 #include "lists.h"
 #include "display.h"
 #include "utils.h"
+#include "exploit.h"
 
 /*
  * 
@@ -41,7 +42,7 @@ void dev_info_menu(list *devices){
 }
 
 void menu(struct sys_inf *system_info, list *devices){
-    char input[2];
+    char input[10];
     int _input;
     
     while(true){
@@ -100,33 +101,62 @@ void menu(struct sys_inf *system_info, list *devices){
     }
 }
 
+void start_fuzzing(){
+    system("ssh root@localhost -p 2222 -i ./resources/keys/root_id_rsa mkdir /home/fuzz/fuzzer");
+    system("scp -P 2222 -i ./resources/keys/root_id_rsa ./fuzzer/fuzzer ./resources/configs/example_module.conf ./resources/configs/run_fuzzer.sh root@localhost:/home/fuzz/fuzzer");
+    //system("ssh root@localhost -p 2222 -i ./resources/keys/root_id_rsa nohup /home/fuzz/fuzzer/fuzzer && wait");
+    FILE* remf = popen("ssh root@localhost -p 2222 -i ./resources/keys/root_id_rsa /home/fuzz/fuzzer/fuzzer", "w");
+    char *A;
+    fgets(A);
+    // system("scp -P 2222 -i ./resources/keys/root_id_rsa ./resources/configs/example_module.conf root@localhost:/home/fuzz/fuzzer");
+    //system("ssh root@localhost -p 2222 -i ./resources/keys/root_id_rsa cat /home/fuzz/fuzzer/bug_report.txt");
+}
+
 int main(int argc, char** argv) {
-    
-    struct sys_inf *system_info = get_system_info();
+    start_fuzzing();
+    /*struct sys_inf *system_info = get_system_info();
     //system_info->processors = get_proccessor_info(system_info->num_of_cores);
     
     list *devices = new_list();
     scan_active_devices(devices);
     
     
-    list *tools = new_list();
-    scan_installed_tools(tools);
-    /*
-    /*for(int i=0; i<7; i++)
-        printf("core %d: threads = %d\n",system_info->processors[i].core_id, system_info->processors[i].num_threads);
-    */
+    //list *tools = new_list();
+    //scan_installed_tools(tools);
+    
+    //for(int i=0; i<7; i++)
+    //    printf("core %d: threads = %d\n",system_info->processors[i].core_id, system_info->processors[i].num_threads);
+    
     
     //display_installed_tools(tools);
     
-    menu(system_info, devices);
+    //menu(system_info, devices);
+    printf("%s\n",system_info->u_name->release);
     
+    char buffer[_UTSNAME_RELEASE_LENGTH];
+    strcpy(buffer, system_info->u_name->release);
+    char * flag = strtok(buffer, "-");
+    printf("%s\n",flag);
+    */
     
     //int err = system("ssh root@localhost -p 2222 -i ./resources/keys/root_id_rsa mkdir /home/fuzz/Desktop/new");
-    /*
+    //syslog_monitor();
+    //fuzzing_device("/dev/scull");
+    /*FILE * ssh = popen("ssh root@localhost -p 2222 -i ./resources/keys/root_id_rsa", "w");
+    //system("ssh root@localhost -p 2222 -i ./resources/keys/root_id_rsa");
     
-   
+    char input[100];
+    //while(1){
+        fgets(input, 100 , stdin);
+        fprintf(ssh, input);
+        //fputc('\n',ssh);
     
-   
+    //}
+    fclose(ssh);
+    */
+    
+    
+    //struct VM vm = {"./resources/keys/root_id_rsa"};
     
     /* To do list:
      * gdb tools
@@ -137,6 +167,15 @@ int main(int argc, char** argv) {
      * exploits DB
      * ...
      */
+    //system("./resources/vm/run \"/home/oem/Desktop/gitRepos/TFG/VM/ubuntu-desktop/ubuntu-21-04.img\"");
+    
+    //struct modconfig *modconf = load_config("./resources/configs/example_module.conf");
+    
+    //element *p = modconf->ioctlcmds->first_element->next;
+    //struct ioctlcmd *cmd = p->content;
+    //printf("%d, %d, %d",cmd->id, cmd->in_dtype, cmd->type );
 
+    //create_new_syscall("scull", 'c', IOCTL, cmd, "TEST", 5);
+    
     return (EXIT_SUCCESS);
 }

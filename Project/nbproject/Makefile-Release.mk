@@ -36,6 +36,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/display.o \
+	${OBJECTDIR}/fuzz_manager.o \
 	${OBJECTDIR}/infgath.o \
 	${OBJECTDIR}/lists.o \
 	${OBJECTDIR}/main.o \
@@ -70,6 +71,11 @@ ${OBJECTDIR}/display.o: display.c
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.c) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/display.o display.c
+
+${OBJECTDIR}/fuzz_manager.o: fuzz_manager.c
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.c) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/fuzz_manager.o fuzz_manager.c
 
 ${OBJECTDIR}/infgath.o: infgath.c
 	${MKDIR} -p ${OBJECTDIR}

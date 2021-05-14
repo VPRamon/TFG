@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -x
+
+qemu-system-x86_64 \
+  -enable-kvm \
+  -serial stdio \
+  -soundhw hda \
+  -hda "ubuntu-desktop/ubuntu-21-04.img" \
+  -net user,hostfwd=tcp::2222-:22 \
+  -net nic \
+  -m 4G \
+  -smp 4 \
+  -cpu host,-rdtscp \
+  -kernel "/home/oem/Desktop/workspace/kernel/linux-5.4.117/arch/x86/boot/bzImage" \
+  -initrd "ubuntu-desktop/initrd.img" \
+  -append "console=ttyS0 earlyprintk=serial root=/dev/mapper/ubuntu--vg-ubuntu--lv ro" 
+
