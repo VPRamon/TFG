@@ -169,7 +169,7 @@ void display_exploits(list *exploits){
     printf( "##########################################\n"
             "###############  EXPLOITS  ###############\n"
             "##########################################\n\n");
-    if(exploits){
+    if(exploits->len>0){
         int i=0;
         element *p = exploits->first_element;
         while(p != NULL){

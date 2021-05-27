@@ -84,14 +84,15 @@ void exploits_menu(struct sys_inf *system_info){
     
     system("clear");
     printf("[0] Default search\n"
-           "[1] Personalized Search\n");
+           "[1] Personalized Search\n"
+           "[2] Load exploit");
     
     list *exploits;
     char input[10];
     int _input;
-    printf("\n>> Select an option [0-%d]: ", 1);
+    printf("\n>> Select an option [0-%d]: ", 2);
     fgets(input, 10 , stdin);
-    _input = valid_input(input[0], 2);
+    _input = valid_input(input[0], 3);
     
     switch(_input){
         case 0:
@@ -112,11 +113,32 @@ void exploits_menu(struct sys_inf *system_info){
             goto opt;
             //free_exploits(exploits);
             break;
+        
+        case 2:
+            system("clear");
+            printf("Give the path to the exploit: ");
+            char path[100];
+            fgets(path, 100 , stdin);
+            char *dir = strtok(path, "\n");
+            while(access( dir, F_OK ) != 0 ) {
+                puts(dir);
+                printf("Exploit not found! Make sure the path is correct and try again [q/quit]: ");
+                fgets(path, 50 , stdin);
+                dir = strtok(path, "\n");
+                if(path[0] == 'q')
+                    return;
+            }
+            
+            exploits = new_list();
+            load_exploit(exploits, path);
+            goto opt;
+            //free_exploits(exploits);
+            break;
     }  
     
     opt:
         if(exploits->len == 0)
-            return 0;
+            return;
         system("clear");
         display_exploits(exploits);
         printf("\n>> Pick exploit [0-%d]/[q]: ", exploits->len-1);
@@ -124,7 +146,7 @@ void exploits_menu(struct sys_inf *system_info){
         fgets(index, 5 , stdin);
 
         if(index[0] == 'q')
-            return 0;
+            return;
 
         element *el = get_element_from_list(exploits, atoi(index));
         struct exploit *xplt = (struct exploit *)el->content; 
@@ -132,10 +154,13 @@ void exploits_menu(struct sys_inf *system_info){
 
         printf("\n\n[0] View exploit\n"
                "[1] Edit exploit\n"
-               "[2] Change exploit\n");            
+               "[2] Change exploit\n"
+               "[q] Quit\n");            
 
         printf("\n>> Select an option [0-%d]: ", 3);
         fgets(input, 10 , stdin);
+        if(input[0] == 'q')
+            return;
         _input = valid_input(input[0], 3);
 
 
@@ -151,7 +176,6 @@ void exploits_menu(struct sys_inf *system_info){
             case 1:
                 system("clear");
                 edit_exploit(xplt);
-                fgetc(stdin);
                 goto opt;
                 break;
 
