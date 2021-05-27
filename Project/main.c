@@ -205,8 +205,7 @@ void menu(struct sys_inf *system_info){
                 " [2] Modules\n"
                 " [3] Devices\n"
                 " [4] Fuzzer\n"
-                " [5] Debugger\n"
-                " [6] Exploitation lab\n"
+                " [5] Exploitation lab\n"
                 " [q|Q] Quit\n");
         
         printf("\n>> Select an option [0-%d]: ", MENU_OPTIONS-1);
@@ -235,9 +234,6 @@ void menu(struct sys_inf *system_info){
                 
             case FUZZER:
                 fuzzer_menu();
-                break;
-                
-            case DEBUGGER:
                 break;
 
             case EXPLOIT:
@@ -271,53 +267,6 @@ int main(int argc, char** argv) {
     //display_installed_tools(tools);
     
     menu(system_info);
-    
-    
-    //printf("%s\n",system_info->u_name->release);
-    /*
-    char buffer[_UTSNAME_RELEASE_LENGTH];
-    strcpy(buffer, system_info->u_name->release);
-    char * flag = strtok(buffer, "-");
-    printf("%s\n",flag);
-    */
-    
-    //int err = system("ssh root@localhost -p 2222 -i ./resources/keys/root_id_rsa mkdir /home/fuzz/Desktop/new");
-    //syslog_monitor();
-    //fuzzing_device("/dev/scull");
-    /*FILE * ssh = popen("ssh root@localhost -p 2222 -i ./resources/keys/root_id_rsa", "w");
-    //system("ssh root@localhost -p 2222 -i ./resources/keys/root_id_rsa");
-    
-    char input[100];
-    //while(1){
-        fgets(input, 100 , stdin);
-        fprintf(ssh, input);
-        //fputc('\n',ssh);
-    
-    //}
-    fclose(ssh);
-    */
-    
-    
-    //struct VM vm = {"./resources/keys/root_id_rsa"};
-    
-    /* To do list:
-     * gdb tools
-     * loaded modules
-     * software versions
-     * Hardware devices
-     * running remotely
-     * exploits DB
-     * ...
-     */
-    //system("./resources/vm/run \"/home/oem/Desktop/gitRepos/TFG/VM/ubuntu-desktop/ubuntu-21-04.img\"");
-    
-    //struct modconfig *modconf = load_config("./resources/configs/example_module.conf");
-    
-    //element *p = modconf->ioctlcmds->first_element->next;
-    //struct ioctlcmd *cmd = p->content;
-    //printf("%d, %d, %d",cmd->id, cmd->in_dtype, cmd->type );
-
-    //create_new_syscall("scull", 'c', IOCTL, cmd, "TEST", 5);
     
     return (EXIT_SUCCESS);
 }
