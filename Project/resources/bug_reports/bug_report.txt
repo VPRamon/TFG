@@ -1,0 +1,74 @@
+May 26 23:24:59 fuzz kernel: [   66.712542] BUG: KASAN: stack-out-of-bounds in string+0x3f9/0x430
+May 26 23:24:59 fuzz kernel: [   66.712545] Read of size 1 at addr ffff8881004afd50 by task fuzz.out/2490
+May 26 23:24:59 fuzz kernel: [   66.712546] 
+May 26 23:24:59 fuzz kernel: [   66.712549] CPU: 2 PID: 2490 Comm: fuzz.out Tainted: G           OE     5.4.117 #2
+May 26 23:24:59 fuzz kernel: [   66.712552] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-1 04/01/2014
+May 26 23:24:59 fuzz kernel: [   66.712554] Call Trace:
+May 26 23:24:59 fuzz kernel: [   66.712555]  dump_stack+0xd0/0x113
+May 26 23:24:59 fuzz kernel: [   66.712557]  print_address_description.constprop.0+0x20/0x250
+May 26 23:24:59 fuzz kernel: [   66.712559]  ? string+0x3f9/0x430
+May 26 23:24:59 fuzz kernel: [   66.712561]  __kasan_report.cold+0x37/0x77
+May 26 23:24:59 fuzz kernel: [   66.712562]  ? wait_for_xmitr+0x150/0x250
+May 26 23:24:59 fuzz kernel: [   66.712564]  ? string+0x3f9/0x430
+May 26 23:24:59 fuzz kernel: [   66.712565]  kasan_report+0x14/0x20
+May 26 23:24:59 fuzz kernel: [   66.712567]  __asan_report_load1_noabort+0x14/0x20
+May 26 23:24:59 fuzz kernel: [   66.712569]  string+0x3f9/0x430
+May 26 23:24:59 fuzz kernel: [   66.712570]  ? ip6_addr_string_sa+0x8a0/0x8a0
+May 26 23:24:59 fuzz kernel: [   66.712572]  ? __kasan_check_write+0x14/0x20
+May 26 23:24:59 fuzz kernel: [   66.712574]  vsnprintf+0xbe5/0x1af0
+May 26 23:24:59 fuzz kernel: [   66.712575]  ? pointer+0x960/0x960
+May 26 23:24:59 fuzz kernel: [   66.712577]  vscnprintf+0x2d/0x80
+May 26 23:24:59 fuzz kernel: [   66.712578]  vprintk_store+0x49/0x4b0
+May 26 23:24:59 fuzz kernel: [   66.712580]  ? __irq_work_queue_local+0x7a/0xe0
+May 26 23:24:59 fuzz kernel: [   66.712582]  vprintk_emit+0x21e/0x4b0
+May 26 23:24:59 fuzz kernel: [   66.712583]  ? do_syscall_64+0xca/0x270
+May 26 23:24:59 fuzz kernel: [   66.712585]  ? entry_SYSCALL_64_after_hwframe+0x44/0xa9
+May 26 23:24:59 fuzz kernel: [   66.712587]  vprintk_default+0x75/0x110
+May 26 23:24:59 fuzz kernel: [   66.712589]  vprintk_func+0x7f/0x130
+May 26 23:24:59 fuzz kernel: [   66.712590]  printk+0xbf/0xf2
+May 26 23:24:59 fuzz kernel: [   66.712592]  ? em_register_perf_domain.cold+0x94/0x94
+May 26 23:24:59 fuzz kernel: [   66.712594]  ? __virt_addr_valid+0x23a/0x320
+May 26 23:24:59 fuzz kernel: [   66.712596]  device_write+0x123/0x168 [test_module]
+May 26 23:24:59 fuzz kernel: [   66.712598]  ? device_read+0x133/0x133 [test_module]
+May 26 23:24:59 fuzz kernel: [   66.712600]  ? __sanitizer_cov_trace_const_cmp4+0x16/0x20
+May 26 23:24:59 fuzz kernel: [   66.712602]  ? security_file_permission+0x23b/0x390
+May 26 23:24:59 fuzz kernel: [   66.712603]  ? putname+0xf4/0x130
+May 26 23:24:59 fuzz kernel: [   66.712605]  __vfs_write+0x92/0x120
+May 26 23:24:59 fuzz kernel: [   66.712607]  ? device_read+0x133/0x133 [test_module]
+May 26 23:24:59 fuzz kernel: [   66.712608]  vfs_write+0x1e9/0x570
+May 26 23:24:59 fuzz kernel: [   66.712610]  ksys_write+0x14f/0x290
+May 26 23:24:59 fuzz kernel: [   66.712611]  ? __ia32_sys_read+0xb0/0xb0
+May 26 23:24:59 fuzz kernel: [   66.712613]  ? __sanitizer_cov_trace_cmp4+0x16/0x20
+May 26 23:24:59 fuzz kernel: [   66.712616]  ? fpregs_assert_state_consistent+0x8c/0xf0
+May 26 23:24:59 fuzz kernel: [   66.712617]  __x64_sys_write+0x78/0xb0
+May 26 23:24:59 fuzz kernel: [   66.712619]  do_syscall_64+0xca/0x270
+May 26 23:24:59 fuzz kernel: [   66.712621]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+May 26 23:24:59 fuzz kernel: [   66.712622] RIP: 0033:0x7f08b92a23c0
+May 26 23:24:59 fuzz kernel: [   66.712629] Code: 73 01 c3 48 8b 0d d8 ca 2c 00 f7 d8 64 89 01 48 83 c8 ff c3 66 0f 1f 44 00 00 83 3d 89 23 2d 00 00 75 10 b8 01 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 31 c3 48 83 ec 08 e8 fe dd 01 00 48 89 04 24
+May 26 23:24:59 fuzz kernel: [   66.712631] RSP: 002b:00007ffc22854c08 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+May 26 23:24:59 fuzz kernel: [   66.712635] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f08b92a23c0
+May 26 23:24:59 fuzz kernel: [   66.712638] RDX: 0000000000000080 RSI: 00000000004006b0 RDI: 0000000000000005
+May 26 23:24:59 fuzz kernel: [   66.712641] RBP: 00007ffc22854c20 R08: 0000000000400680 R09: 00007f08b9585af0
+May 26 23:24:59 fuzz kernel: [   66.712643] R10: 000000000000086f R11: 0000000000000246 R12: 00000000004004c0
+May 26 23:24:59 fuzz kernel: [   66.712646] R13: 00007ffc22854d00 R14: 0000000000000000 R15: 0000000000000000
+May 26 23:24:59 fuzz kernel: [   66.712647] 
+May 26 23:24:59 fuzz kernel: [   66.712649] The buggy address belongs to the page:
+May 26 23:24:59 fuzz kernel: [   66.712652] page:ffffea0004012bc0 refcount:0 mapcount:0 mapping:0000000000000000 index:0x0
+May 26 23:24:59 fuzz kernel: [   66.712654] flags: 0x17ffffc0000000()
+May 26 23:24:59 fuzz kernel: [   66.712657] raw: 0017ffffc0000000 0000000000000000 ffffea0004012ac8 0000000000000000
+May 26 23:24:59 fuzz kernel: [   66.712660] raw: 0000000000000000 0000000000240000 00000000ffffffff 0000000000000000
+May 26 23:24:59 fuzz kernel: [   66.712662] page dumped because: kasan: bad access detected
+May 26 23:24:59 fuzz kernel: [   66.712663] 
+May 26 23:24:59 fuzz kernel: [   66.712667] addr ffff8881004afd50 is located in stack of task fuzz.out/2490 at offset 160 in frame:
+May 26 23:24:59 fuzz kernel: [   66.712669]  device_write+0x0/0x168 [test_module]
+May 26 23:24:59 fuzz kernel: [   66.712670] 
+May 26 23:24:59 fuzz kernel: [   66.712671] this frame has 1 object:
+May 26 23:24:59 fuzz kernel: [   66.712673]  [32, 160) 'pwn'
+May 26 23:24:59 fuzz kernel: [   66.712674] 
+May 26 23:24:59 fuzz kernel: [   66.712676] Memory state around the buggy address:
+May 26 23:24:59 fuzz kernel: [   66.712679]  ffff8881004afc00: 00 00 00 f3 f3 f3 f3 f3 00 00 00 00 00 00 00 00
+May 26 23:24:59 fuzz kernel: [   66.712682]  ffff8881004afc80: 00 00 00 00 00 00 f1 f1 f1 f1 00 00 00 00 00 00
+May 26 23:24:59 fuzz kernel: [   66.712685] >ffff8881004afd00: 00 00 00 00 00 00 00 00 00 00 f3 f3 f3 f3 00 00
+May 26 23:24:59 fuzz kernel: [   66.712687]                                                  ^
+May 26 23:24:59 fuzz kernel: [   66.712690]  ffff8881004afd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+May 26 23:24:59 fuzz kernel: [   66.712693]  ffff8881004afe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1

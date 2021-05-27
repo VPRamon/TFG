@@ -126,27 +126,27 @@ struct sys_inf *get_system_info(){
     char *tmp;
     char tmp1[50], tmp2[100];
     
-    system_cmd("lscpu | grep '^CPU(s)'", &tmp, 100);
+    system_cmd2("lscpu | grep '^CPU(s)'", &tmp, 100);
     sscanf(tmp, "%[^:]:%s", tmp1, tmp2);
     system_info->_cpu.num_of_cpus = atoi(tmp2);
     
-    system_cmd("lscpu | grep -E '^Core'", &tmp, 100);
+    system_cmd2("lscpu | grep -E '^Core'", &tmp, 100);
     sscanf(tmp, "%[^:]:%s", tmp1, tmp2);
     system_info->_cpu.num_of_cores = atoi(tmp2);
     
-    system_cmd("lscpu | grep -E '^Thread'", &tmp, 100);
+    system_cmd2("lscpu | grep -E '^Thread'", &tmp, 100);
     sscanf(tmp, "%[^:]:%s", tmp1, tmp2);
     system_info->_cpu.threadsXcore = atoi(tmp2);
     
-    system_cmd("lscpu | grep -E '^Socket'", &tmp, 100);
+    system_cmd2("lscpu | grep -E '^Socket'", &tmp, 100);
     sscanf(tmp, "%[^:]:%s", tmp1, tmp2);
     system_info->_cpu.num_of_sockets = atoi(tmp2);
     
-    system_cmd("lscpu | grep -E '^Architecture'", &tmp, 100);
+    system_cmd2("lscpu | grep -E '^Architecture'", &tmp, 100);
     sscanf(tmp, "%[^:]:\t%[^\n]\n", tmp1, tmp2);
     memcpy(system_info->_cpu.arch, tmp2, 8);
     
-    system_cmd("lscpu | grep -E '^Model name'", &tmp, 100);
+    system_cmd2("lscpu | grep -E '^Model name'", &tmp, 100);
     sscanf(tmp, "%[^:]:\t%[^\n]\n", tmp1, tmp2);
     memcpy(system_info->_cpu.model, tmp2, 100);
     
@@ -181,7 +181,7 @@ void scan_installed_tools(list *tools){
     char* out;    
     for(int i=0;i<NUMBER_OF_TOOLS;i++){
         sprintf(which, "which %s", tools_struct[i].name);
-        system_cmd(which, &out, MAX_STRING_SIZE);
+        system_cmd2(which, &out, MAX_STRING_SIZE);
         if(strcmp(out, "")){
             tools_struct[i].is_installed = true;
             strcpy(tools_struct[i].dir, out);

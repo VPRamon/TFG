@@ -9,6 +9,7 @@
 #define DISPLAY_H
 
 #include "infgath.h"
+#include "exploits.h"
 
 #define MENU_OPTIONS 7
 #define EXIT_MENU -1
@@ -28,6 +29,9 @@ void display_sys_info(struct sys_inf *system_info);
 void display_network_info();
 void display_device(struct device dev);
 void display_devices(list *devices);
+void display_modules();
+void display_exploits(list *exploits);
+void display_exploit(struct exploit *xplt);
 
 #endif /* DISPLAY_H */
 

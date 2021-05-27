@@ -27,6 +27,7 @@ element *new_element(void *content);
 
 void push(list *l, void *content);
 void pop(list *l); 
+element *get_element_from_list(list *exploits, int pos);
 
 #endif /* LISTS_H */
 

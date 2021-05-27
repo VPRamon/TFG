@@ -14,9 +14,10 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-void system_cmd(char *input, char **output, int size);
+void system_cmd2(char *input, char **output, int size);
+char *system_cmd(char *input, int chunk_size);
 int valid_input(char input, int max);
-
+char *parse_release(char *release);
 
 #endif /* UTILS_H */
 

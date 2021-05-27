@@ -5,6 +5,7 @@
 #include "display.h"
 #include "infgath.h"
 #include "utils.h"
+#include "exploits.h"
 
 void display_sys_info(struct sys_inf *system_info){
     printf( "##########################################\n"
@@ -90,19 +91,19 @@ void display_network_info(){
            "################  NETWORK  ###############\n"
            "##########################################\n");
     char* out;
-    system_cmd("which ifconfig", &out, MAX_STRING_SIZE);
+    system_cmd2("which ifconfig", &out, MAX_STRING_SIZE);
     if(strcmp(out, "")){
         printf("\n[*] Interfaces:\n\n");
         system("/sbin/ifconfig -a");
     }
     
-    system_cmd("which route", &out, MAX_STRING_SIZE);
+    system_cmd2("which route", &out, MAX_STRING_SIZE);
     if(strcmp(out, "")){
         printf("\n[*] Routes:\n\n");
         system("route");
     }
     
-    system_cmd("which netstat", &out, MAX_STRING_SIZE);
+    system_cmd2("which netstat", &out, MAX_STRING_SIZE);
     if(strcmp(out, "")){
         printf("\n[*] Netstat:\n\n");
         system("netstat -antup | grep -v 'TIME_WAIT'");
@@ -150,6 +151,10 @@ void display_devices(list *devices){
     }
 }
 
+void display_modules(){
+    system("lsmod");
+}
+
 void display_installed_tools(list *tools){
     element *p = tools->first_element;
     while(p != NULL){
@@ -159,3 +164,29 @@ void display_installed_tools(list *tools){
         p = p->next;
     }
 }
+
+void display_exploits(list *exploits){
+    printf( "##########################################\n"
+            "###############  EXPLOITS  ###############\n"
+            "##########################################\n\n");
+    if(exploits){
+        int i=0;
+        element *p = exploits->first_element;
+        while(p != NULL){
+            struct exploit *xplt = p->content;
+            printf("[%d] :: [%s]\t:: %s\n", i++, xplt->type, xplt->title);
+            p = p->next;
+        }
+    }
+    else{
+        puts("NO EXPLOIT AVAILABLE");
+    }
+}
+
+void display_exploit(struct exploit *xplt){
+    //puts(xplt->path);
+    char path[50] = "cat ";
+    strcat(path, xplt->path);
+    system(path);
+}
+

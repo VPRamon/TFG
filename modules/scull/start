@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+./unload_scull
+make
+./load_scull
+chmod 666 /dev/scull
+echo "TEST" > /dev/scull
+

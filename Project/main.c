@@ -14,7 +14,7 @@
 #include "lists.h"
 #include "display.h"
 #include "utils.h"
-#include "exploit.h"
+#include "exploits.h"
 
 /*
  * 
@@ -41,9 +41,135 @@ void dev_info_menu(list *devices){
     fgetc(stdin);
 }
 
-void menu(struct sys_inf *system_info, list *devices){
+void mod_info_menu(){
+    system("clear");
+    display_modules();
+    printf("\n\n<< press any key to go back");
+    fgetc(stdin);
+}
+
+void fuzzer_menu(){
+    system("clear");
+    printf("First you must give some information about the device to be fuzzed.\n"
+         "Do you want modify the device.conf file [y/n/q]? ");
+    char input[10];
+    fgets(input, 10 , stdin);
+    while(input[0] != 'y' && input[0] != 'n' && input[0] != 'q'){
+        printf("\n'y' to continue, 'n' to go back.");
+        fgets(input, 10 , stdin);
+    }
+      
+    if(input[0] == 'y'){
+        system("vim resources/configs/device.conf");
+        system("clear");
+    }else if(input[0] == 'n'){
+        printf("Make sure the VM is up, and your ssh key is in resources/keys.\n"
+         "Do you want to continue [y/n]? ");
+        fgets(input, 10 , stdin);
+        while(input[0] != 'y' && input[0] != 'n'){
+            printf("\n'y' to continue, 'n' to go back.");
+            fgets(input, 10 , stdin);
+        }
+        if(input[0] == 'y'){
+            system("python3 fuzzer_ssh/main.py");
+            system("clear");
+            system("cat resources/bug_reports/bug_report.txt");
+            printf("\n\n<< press any key to go back");
+            fgetc(stdin);
+        }
+    }
+}
+
+void exploits_menu(struct sys_inf *system_info){
+    
+    system("clear");
+    printf("[0] Default search\n"
+           "[1] Personalized Search\n");
+    
+    list *exploits;
     char input[10];
     int _input;
+    printf("\n>> Select an option [0-%d]: ", 1);
+    fgets(input, 10 , stdin);
+    _input = valid_input(input[0], 2);
+    
+    switch(_input){
+        case 0:
+            system("clear");
+            char *r = parse_release(system_info->u_name->release);
+            exploits = search_exploit(r);
+            display_exploits(exploits);
+            goto opt;
+            //free_exploits(exploits);
+            break;
+            
+        case 1:
+            system("clear");
+            printf("Search exploit: ");
+            char in[20];
+            fgets(in, 20 , stdin);
+            exploits = search_exploit(in);
+            goto opt;
+            //free_exploits(exploits);
+            break;
+    }  
+    
+    opt:
+        if(exploits->len == 0)
+            return 0;
+        system("clear");
+        display_exploits(exploits);
+        printf("\n>> Pick exploit [0-%d]/[q]: ", exploits->len-1);
+        char index[5];
+        fgets(index, 5 , stdin);
+
+        if(index[0] == 'q')
+            return 0;
+
+        element *el = get_element_from_list(exploits, atoi(index));
+        struct exploit *xplt = (struct exploit *)el->content; 
+
+
+        printf("\n\n[0] View exploit\n"
+               "[1] Edit exploit\n"
+               "[2] Change exploit\n");            
+
+        printf("\n>> Select an option [0-%d]: ", 3);
+        fgets(input, 10 , stdin);
+        _input = valid_input(input[0], 3);
+
+
+        switch(_input){
+            case 0:
+                system("clear");
+                display_exploit(xplt);
+                printf("\n\n<< press any key to go back");
+                fgetc(stdin);
+                goto opt;
+                break;
+
+            case 1:
+                system("clear");
+                edit_exploit(xplt);
+                fgetc(stdin);
+                goto opt;
+                break;
+
+            case 2:
+                goto opt;
+                break;
+        }
+    
+        printf("\n\n<< press any key to go back");
+        fgetc(stdin);
+}
+
+void menu(struct sys_inf *system_info){
+    char input[10];
+    int _input;
+    
+    list *devices;//, *exploits;
+    //char *r;
     
     while(true){
         system("clear");
@@ -62,6 +188,8 @@ void menu(struct sys_inf *system_info, list *devices){
         printf("\n>> Select an option [0-%d]: ", MENU_OPTIONS-1);
         fgets(input, 10 , stdin);
         _input = valid_input(input[0], MENU_OPTIONS);
+        
+        
         switch(_input){
             case SYS_INFO:
                 sys_info_menu(system_info);
@@ -72,19 +200,26 @@ void menu(struct sys_inf *system_info, list *devices){
                 break;
             
             case RUNNING_MODULES:
+                mod_info_menu();
                 break;
                 
             case RUNNING_DEVICES:
+                devices = new_list();
+                scan_active_devices(devices);
                 dev_info_menu(devices);
                 break;
                 
             case FUZZER:
+                fuzzer_menu();
                 break;
                 
             case DEBUGGER:
                 break;
 
             case EXPLOIT:
+                //r = parse_release(system_info->u_name->release);
+                //exploits = search_exploit(r);
+                exploits_menu(system_info);
                 break;
              
             case EXIT_MENU:
@@ -101,38 +236,21 @@ void menu(struct sys_inf *system_info, list *devices){
     }
 }
 
-void start_fuzzing(){
-    system("ssh root@localhost -p 2222 -i ./resources/keys/root_id_rsa mkdir /home/fuzz/fuzzer");
-    system("scp -P 2222 -i ./resources/keys/root_id_rsa ./fuzzer/fuzzer ./resources/configs/example_module.conf ./resources/configs/run_fuzzer.sh root@localhost:/home/fuzz/fuzzer");
-    //system("ssh root@localhost -p 2222 -i ./resources/keys/root_id_rsa nohup /home/fuzz/fuzzer/fuzzer && wait");
-    FILE* remf = popen("ssh root@localhost -p 2222 -i ./resources/keys/root_id_rsa /home/fuzz/fuzzer/fuzzer", "w");
-    char *A;
-    fgets(A);
-    // system("scp -P 2222 -i ./resources/keys/root_id_rsa ./resources/configs/example_module.conf root@localhost:/home/fuzz/fuzzer");
-    //system("ssh root@localhost -p 2222 -i ./resources/keys/root_id_rsa cat /home/fuzz/fuzzer/bug_report.txt");
-}
 
 int main(int argc, char** argv) {
-    start_fuzzing();
-    /*struct sys_inf *system_info = get_system_info();
-    //system_info->processors = get_proccessor_info(system_info->num_of_cores);
-    
-    list *devices = new_list();
-    scan_active_devices(devices);
-    
+    //start_fuzzing();
+   
+    struct sys_inf *system_info = get_system_info();
     
     //list *tools = new_list();
     //scan_installed_tools(tools);
-    
-    //for(int i=0; i<7; i++)
-    //    printf("core %d: threads = %d\n",system_info->processors[i].core_id, system_info->processors[i].num_threads);
-    
-    
     //display_installed_tools(tools);
     
-    //menu(system_info, devices);
-    printf("%s\n",system_info->u_name->release);
+    menu(system_info);
     
+    
+    //printf("%s\n",system_info->u_name->release);
+    /*
     char buffer[_UTSNAME_RELEASE_LENGTH];
     strcpy(buffer, system_info->u_name->release);
     char * flag = strtok(buffer, "-");

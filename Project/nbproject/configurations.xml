@@ -5,7 +5,7 @@
                    displayName="Header Files"
                    projectFiles="true">
       <itemPath>display.h</itemPath>
-      <itemPath>fuzz_manager.h</itemPath>
+      <itemPath>exploits.h</itemPath>
       <itemPath>infgath.h</itemPath>
       <itemPath>lists.h</itemPath>
       <itemPath>utils.h</itemPath>
@@ -18,7 +18,7 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>display.c</itemPath>
-      <itemPath>fuzz_manager.c</itemPath>
+      <itemPath>exploits.c</itemPath>
       <itemPath>infgath.c</itemPath>
       <itemPath>lists.c</itemPath>
       <itemPath>main.c</itemPath>
@@ -55,9 +55,9 @@
       </item>
       <item path="display.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="fuzz_manager.c" ex="false" tool="0" flavor2="0">
+      <item path="exploits.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="fuzz_manager.h" ex="false" tool="3" flavor2="0">
+      <item path="exploits.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="infgath.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -98,9 +98,9 @@
       </item>
       <item path="display.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="fuzz_manager.c" ex="false" tool="0" flavor2="0">
+      <item path="exploits.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="fuzz_manager.h" ex="false" tool="3" flavor2="0">
+      <item path="exploits.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="infgath.c" ex="false" tool="0" flavor2="0">
       </item>

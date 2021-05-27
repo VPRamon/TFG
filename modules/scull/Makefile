@@ -13,6 +13,7 @@ LDDINC=$(PWD)/../include
 
 EXTRA_CFLAGS += $(DEBFLAGS)
 EXTRA_CFLAGS += -I$(LDDINC)
+KBUILD_CFLAGS += -fno-stack-protector
 
 ifneq ($(KERNELRELEASE),)
 # call from kernel build system
@@ -24,8 +25,8 @@ obj-m	:= scull.o
 else
 
 #KERNELDIR ?= /lib/modules/$(shell uname -r)/build
+KERNELDIR ?= /lib/modules/5.4.117/build
 PWD       := $(shell pwd)
-KERNELDIR = /lib/modules/5.4.117/build
 
 modules:
 	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules
@@ -38,7 +39,7 @@ clean:
 	rm -rf *.o *~ core .depend .*.cmd *.ko *.mod.c .tmp_versions *.mod modules.order *.symvers
 
 depend .depend dep:
-	$(CC) $(EXTRA_CFLAGS) -M *.c > .depend
+	$(CC) $(EXTRA_CFLAGS) $(KBUILD_CFLAGS) -M *.c > .depend
 
 
 ifeq (.depend,$(wildcard .depend))

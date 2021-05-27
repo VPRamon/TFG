@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "lists.h"
+#include "exploits.h"
 
 
 element *new_element(void *content){
@@ -48,11 +49,21 @@ void pop(list *l){
 }
 
 list *new_list(){
+  
     list *l = (list *) malloc(sizeof(list));
     l->first_element = NULL;
     l->last_element = NULL;
     l->len = 0;
     
-    
     return l;
+}
+
+element *get_element_from_list(list *exploits, int pos){
+    
+    element *p = exploits->first_element;
+    for(int i=0; i<pos; i++)
+        p = p->next;
+    
+    
+    return p;    
 }
