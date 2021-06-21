@@ -13,10 +13,6 @@ The project started is not intended as a definitive version, but as a constantly
 - Create/edit new exploits
  
 
-This text you see here is *actually- written in Markdown! To get a feel
-for Markdown's syntax, type some text into the left window and
-watch the results in the right.
-
 ## Tech
 
 Some of the tools currently being used are:
