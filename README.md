@@ -1,5 +1,5 @@
 # TFG
-## _Hacking Linux, Kernel Exploitation_
+## _Hacking Linux, Automating Kernel Exploitation_
 
 This framework aims to automate the process of exploiting the Linux Kernel, as well as to provide the user with the necessary tools to scan the target and consult already existing exploits.
 
