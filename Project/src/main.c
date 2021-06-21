@@ -60,7 +60,7 @@ void fuzzer_menu(){
     }
       
     if(input[0] == 'y'){
-        system("vim resources/configs/device.conf");
+        system("vim ../resources/configs/device.conf");
         system("clear");
     }else if(input[0] == 'n'){
         printf("Make sure the VM is up, and your ssh key is in resources/keys.\n"
@@ -71,9 +71,9 @@ void fuzzer_menu(){
             fgets(input, 10 , stdin);
         }
         if(input[0] == 'y'){
-            system("python3 fuzzer_ssh/main.py");
+            system("python3 ../fuzzer_ssh/main.py");
             system("clear");
-            system("cat resources/bug_reports/bug_report.txt");
+            system("cat ../resources/bug_reports/bug_report.txt");
             printf("\n\n<< press any key to go back");
             fgetc(stdin);
         }
