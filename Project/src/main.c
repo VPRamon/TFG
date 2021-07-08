@@ -155,13 +155,14 @@ void exploits_menu(struct sys_inf *system_info){
         printf("\n\n[0] View exploit\n"
                "[1] Edit exploit\n"
                "[2] Change exploit\n"
+               "[3] Run exploit\n"
                "[q] Quit\n");            
 
         printf("\n>> Select an option [0-%d]: ", 3);
         fgets(input, 10 , stdin);
         if(input[0] == 'q')
             return;
-        _input = valid_input(input[0], 3);
+        _input = valid_input(input[0], 4);
 
 
         switch(_input){
@@ -181,6 +182,11 @@ void exploits_menu(struct sys_inf *system_info){
 
             case 2:
                 goto opt;
+                break;
+            
+            case 3:
+                run_exploit(xplt);
+                //goto opt;
                 break;
         }
     
