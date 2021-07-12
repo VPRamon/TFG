@@ -345,24 +345,34 @@ int main(){
     srand(time(0));
     
     //init_kcov();
-    puts("main");
     int err = pthread_create(&tid, NULL, &syslog_monitor, NULL);
     while(bug_detected != KASAN_BUG){
         
         // increase input
         count++;
         
-        // get cmd form list randomly
-        if(num_of_cmd)
-            cmd = (rand() % (num_of_cmd));
-
         //create new instructions;
         input = (char*)malloc(count);
         memset(input, 'A', count);
-        syscall = WRITE;
+        
+        syscall = (rand() % (4));
         
         //create_new_syscall;
-        create_new_syscall(dev, magic, syscall, NULL, input, count);
+        for(int i=0; i<4; i++){
+            if((syscall == WRITE) && modconf->fops.write){
+                create_new_syscall(dev, magic, syscall, NULL, input, count);
+            }else if((syscall == READ) && modconf->fops.read){
+                create_new_syscall(dev, magic, syscall, NULL, input, count);
+            }else if((syscall == IOCTL) && modconf->fops.ioctl){
+                cmd = (rand() % (num_of_cmd));  // get cmd form list randomly
+                create_new_syscall(dev, magic, syscall, NULL, input, count);
+            }else if((syscall == LLSEEK) && modconf->fops.llseek){
+                create_new_syscall(dev, magic, syscall, NULL, input, count);
+            }else{
+                syscall += 1;
+                syscall = syscall%4;
+            }
+        }
         
         //compile;
         system("gcc fuzz.c -o fuzz.out");
