@@ -53,7 +53,7 @@ then just run the Framework at 'TFG/Project/bin directory'
 
 
 ## Documentation
-read the full documentation at the root [documentation.pdf](https://github.com/VPRamon/TFG/blob/main/documentation.pdf)
+read the full documentation in the root of the repository  [documentation.pdf](https://github.com/VPRamon/TFG/blob/main/documentation.pdf)
 
 ## Contact
 For any doubt or reporting bug, you can contact me by email: vallespuigramon@gmail.com
