@@ -27,6 +27,10 @@ It is required [SearachSploit](https://www.exploit-db.com/searchsploit) to query
 ```sh
 sudo apt update && sudo apt -y install exploitdb
 ```
+and [Vim editor](https://www.vim.org/) to create/edit exploits.
+```sh
+sudo apt update && sudo apt install vim
+```
 
 To install the Framework just run the INSTALL.sh file in the 'Project' directory.
 
