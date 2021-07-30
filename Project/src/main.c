@@ -52,8 +52,8 @@ void fuzzer_menu(){
     system("clear");
     printf("First you must give some information about the device to be fuzzed.\n"
          "Do you want modify the device.conf file [y/n/q]? ");
-    char input[10];
-    fgets(input, 10 , stdin);
+    char *input;
+    input = read_stdin();
     while(input[0] != 'y' && input[0] != 'n' && input[0] != 'q'){
         printf("\n'y' to continue, 'n' to go back.");
         fgets(input, 10 , stdin);
@@ -78,6 +78,7 @@ void fuzzer_menu(){
             fgetc(stdin);
         }
     }
+    free(input);
 }
 
 void exploits_menu(struct sys_inf *system_info){
@@ -88,12 +89,12 @@ void exploits_menu(struct sys_inf *system_info){
            "[2] Load exploit");
     
     list *exploits;
-    char input[10];
+    char *input;
     int _input;
     printf("\n>> Select an option [0-%d]: ", 2);
-    fgets(input, 10 , stdin);
+    input = read_stdin();
     _input = valid_input(input[0], 3);
-    
+    free(input);
     switch(_input){
         case 0:
             system("clear");
@@ -195,11 +196,10 @@ void exploits_menu(struct sys_inf *system_info){
 }
 
 void menu(struct sys_inf *system_info){
-    char input[10];
+    char *input;
     int _input;
     
-    list *devices;//, *exploits;
-    //char *r;
+    list *devices;
     
     while(true){
         system("clear");
@@ -215,11 +215,12 @@ void menu(struct sys_inf *system_info){
                 " [q|Q] Quit\n");
         
         printf("\n>> Select an option [0-%d]: ", MENU_OPTIONS-1);
-        fgets(input, 10 , stdin);
+        input = read_stdin();
         _input = valid_input(input[0], MENU_OPTIONS);
-        
+        free(input);
         
         switch(_input){
+            
             case SYS_INFO:
                 sys_info_menu(system_info);
                 break;

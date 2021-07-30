@@ -18,6 +18,7 @@ void system_cmd2(char *input, char **output, int size);
 char *system_cmd(char *input, int chunk_size);
 int valid_input(char input, int max);
 char *parse_release(char *release);
+char *read_stdin();
 
 #endif /* UTILS_H */
 

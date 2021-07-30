@@ -22,7 +22,7 @@ void display_sys_info(struct sys_inf *system_info){
     printf(" \t[+] Number of CPUs:\t%u;\n", system_info->_cpu.num_of_cpus);
     printf(" \t[+] Number of Cores\t%u;\n", system_info->_cpu.num_of_cores);
     printf(" \t[+] Number of Sockets:\t%u;\n", system_info->_cpu.num_of_sockets);
-    printf(" \t[+] threads per core:\t%u;\n", system_info->_cpu.num_of_cores);
+    printf(" \t[+] threads per core:\t%u;\n", system_info->_cpu.threadsXcore);
     printf(" \t[+] Security flags:\t");
     if(system_info->_cpu.flags.smep)
         printf(" smep");
