@@ -91,23 +91,26 @@ void display_network_info(){
            "################  NETWORK  ###############\n"
            "##########################################\n");
     char* out;
-    system_cmd2("which ifconfig", &out, MAX_STRING_SIZE);
+    out = system_cmd("which ifconfig", 100);
     if(strcmp(out, "")){
         printf("\n[*] Interfaces:\n\n");
         system("/sbin/ifconfig -a");
     }
+    free(out);
     
-    system_cmd2("which route", &out, MAX_STRING_SIZE);
+    out = system_cmd("which route", 100);
     if(strcmp(out, "")){
         printf("\n[*] Routes:\n\n");
         system("route");
     }
+    free(out);
     
-    system_cmd2("which netstat", &out, MAX_STRING_SIZE);
+    out = system_cmd("which netstat", 100);
     if(strcmp(out, "")){
         printf("\n[*] Netstat:\n\n");
         system("netstat -antup | grep -v 'TIME_WAIT'");
     }
+    free(out);
 }
 
 void display_device(struct device dev){

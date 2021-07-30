@@ -4,42 +4,29 @@
 #include "display.h"
 #include <string.h>
 
-
-void system_cmd2(char *input, char **output, int size){
-    FILE *p;
-    p = popen(input,"r");    
-    if( p == NULL){
-        puts("Unable to open process");
-    }else{
-        *output = (char *)malloc(sizeof(char)*size);
-        fgets(*output, sizeof(char)*size, p);        
-        pclose(p);
-    }
-}
-
 char *system_cmd(char *input, int chunk_size){
-    if(chunk_size < 1) return NULL;
+    if(chunk_size < 1)
+        exit(1);
+    
     FILE *fp = popen(input,"r");    
     if( fp == NULL){
-        puts("Unable to open process");
-    }else{
-        int len = 0;
-        char *out = NULL;
-        char c;
-        int i = 0;
-        int strl = 0;
-        while((c = getc(fp)) != EOF){
-            if( i+1 >= len || len < chunk_size){
-                out = (char *)realloc( out, (len + chunk_size)*sizeof(char) );
-                len += chunk_size;
-            }
-            strl = strlen(out);
-            strncat(out, &c, 1);
-            i++;  
-        }
-        pclose(fp);
-        return out;
+        printf("Unable to open process %s", input);
+        exit(1);        
     }
+    int out_size = 0, i = 0;
+    char *out = NULL;
+    char c;
+    while((c = getc(fp)) != EOF){
+        if( i+1 >= out_size){
+            out = (char *)realloc( out, (out_size + chunk_size)*sizeof(char) );
+            out_size += chunk_size;
+        }
+        strncat(out, &c, 1);
+        i++;  
+    }
+    pclose(fp);
+    
+    return out;    
 }
 
 

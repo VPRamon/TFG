@@ -90,7 +90,7 @@ struct cpu_bugs{
 
 struct cpu{
     char model[100];
-    char arch[8];
+    char arch[16];
     unsigned int num_of_cpus;
     unsigned int num_of_cores;
     unsigned int threadsXcore;

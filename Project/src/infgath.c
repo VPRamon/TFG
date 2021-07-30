@@ -13,8 +13,7 @@ struct cpu_flags get_cpu_flags(){
     if (fp == NULL)
         exit(EXIT_FAILURE);
     
-    char name[16], buffer[1024];
-    
+    char name[32], buffer[2048];
     while(fscanf(fp, "%[^:]:%[^\n]\n", name, buffer)!=EOF){
         if(!strncmp(name,"flags", sizeof("flags")-1 ))
             break;
@@ -22,7 +21,7 @@ struct cpu_flags get_cpu_flags(){
     
     struct cpu_flags flags = {false, false, false, false, false, false, false, false, false};
     
-    char * flag = strtok(buffer, " ");
+    char *flag = strtok(buffer, " ");
     while( flag != NULL ) {
         if(!strncmp(flag, "smep", sizeof("smep")-1))
             flags.smep = true;
@@ -57,7 +56,7 @@ struct cpu_bugs get_cpu_bugs(){
     if (fp == NULL)
         exit(EXIT_FAILURE);
     
-    char name[16], buffer[1024];
+    char name[32], buffer[2048];
     
     while(fscanf(fp, "%[^:]:%[^\n]\n", name, buffer)!=EOF){
         if(!strncmp(name,"bugs", sizeof("bugs")-1 ))
@@ -119,40 +118,77 @@ struct sys_inf *get_system_info(){
     if(r == -1)
     {
             fprintf(stderr,"%s:uname(2)\n",strerror(errno));
-            exit (1);
+            exit(1);
     }
     system_info->u_name = u_name;
     
     char *tmp;
-    char tmp1[50], tmp2[100];
+    char tmp1[100], tmp2[100];
+    size_t tmp1_len = sizeof(tmp1)/sizeof(tmp1[0]);
+    size_t tmp2_len = sizeof(tmp2)/sizeof(tmp2[0]);
     
-    system_cmd2("lscpu | grep '^CPU(s)'", &tmp, 100);
+    
+    tmp = system_cmd("lscpu | grep '^CPU(s)'", 100);
+    if( tmp1_len < strlen(tmp) || tmp2_len < strlen(tmp) ){
+        puts("ERROR:: overflow attempt at get_system_info. (char tmp)");
+        exit(1);
+    }
     sscanf(tmp, "%[^:]:%s", tmp1, tmp2);
     system_info->_cpu.num_of_cpus = atoi(tmp2);
-    
-    system_cmd2("lscpu | grep -E '^Core'", &tmp, 100);
+    free(tmp);
+        
+    tmp = system_cmd("lscpu | grep -E '^Core'", 100);
+    if( tmp1_len < strlen(tmp) || tmp2_len < strlen(tmp) ){
+        puts("ERROR:: overflow attempt at get_system_info. (char tmp)");
+        exit(1);
+    }
     sscanf(tmp, "%[^:]:%s", tmp1, tmp2);
     system_info->_cpu.num_of_cores = atoi(tmp2);
+    free(tmp);
     
-    system_cmd2("lscpu | grep -E '^Thread'", &tmp, 100);
+    
+    tmp = system_cmd("lscpu | grep -E '^Thread'", 100);
+    if( tmp1_len < strlen(tmp) || tmp2_len < strlen(tmp) ){
+        puts("ERROR:: overflow attempt at get_system_info. (char tmp)");
+        exit(1);
+    }
     sscanf(tmp, "%[^:]:%s", tmp1, tmp2);
     system_info->_cpu.threadsXcore = atoi(tmp2);
+    free(tmp);
     
-    system_cmd2("lscpu | grep -E '^Socket'", &tmp, 100);
+    
+    tmp = system_cmd("lscpu | grep -E '^Socket'", 100);
+    if( tmp1_len < strlen(tmp) || tmp2_len < strlen(tmp) ){
+        puts("ERROR:: overflow attempt at get_system_info. (char tmp)");
+        exit(1);
+    }
     sscanf(tmp, "%[^:]:%s", tmp1, tmp2);
     system_info->_cpu.num_of_sockets = atoi(tmp2);
+    free(tmp);
     
-    system_cmd2("lscpu | grep -E '^Architecture'", &tmp, 100);
+    
+    tmp = system_cmd("lscpu | grep -E '^Architecture'", 100);
+    if( tmp1_len < strlen(tmp) || tmp2_len < strlen(tmp) ){
+        puts("ERROR:: overflow attempt at get_system_info. (char tmp)");
+        exit(1);
+    }
     sscanf(tmp, "%[^:]:\t%[^\n]\n", tmp1, tmp2);
-    memcpy(system_info->_cpu.arch, tmp2, 8);
+    memcpy(system_info->_cpu.arch, tmp2, 16);
+    free(tmp);
     
-    system_cmd2("lscpu | grep -E '^Model name'", &tmp, 100);
+    
+    tmp = system_cmd("lscpu | grep -E '^Model name'", 100);
+    if( tmp1_len < strlen(tmp) || tmp2_len < strlen(tmp) ){
+        puts("ERROR:: overflow attempt at get_system_info. (char tmp)");
+        exit(1);
+    }
     sscanf(tmp, "%[^:]:\t%[^\n]\n", tmp1, tmp2);
     memcpy(system_info->_cpu.model, tmp2, 100);
+    free(tmp);
     
+
     system_info->_cpu.flags = get_cpu_flags();
     system_info->_cpu.bugs  = get_cpu_bugs();
-    free(tmp);
     
     return system_info;
 }
@@ -181,11 +217,12 @@ void scan_installed_tools(list *tools){
     char* out;    
     for(int i=0;i<NUMBER_OF_TOOLS;i++){
         sprintf(which, "which %s", tools_struct[i].name);
-        system_cmd2(which, &out, MAX_STRING_SIZE);
+        out = system_cmd(which, MAX_STRING_SIZE);
         if(strcmp(out, "")){
             tools_struct[i].is_installed = true;
             strcpy(tools_struct[i].dir, out);
         }
+        free(out);
         push(tools, &tools_struct[i]);
     }
         
