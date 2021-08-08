@@ -88,7 +88,7 @@ void exploits_menu(struct sys_inf *system_info){
            "[1] Personalized Search\n"
            "[2] Load exploit");
     
-    list *exploits;
+    list *exploits = new_list();
     char *input;
     int _input;
     printf("\n>> Select an option [0-%d]: ", 2);
@@ -98,21 +98,37 @@ void exploits_menu(struct sys_inf *system_info){
     switch(_input){
         case 0:
             system("clear");
-            char *r = parse_release(system_info->u_name->release);
-            exploits = search_exploit(r);
-            display_exploits(exploits);
-            goto opt;
+            if( (access( "/bin/searchsploit", F_OK ) == 0 ) || (access( "/sbin/searchsploit", F_OK ) == 0)) {
+                char *r = parse_release(system_info->u_name->release);
+                exploits = search_exploit(r);
+                display_exploits(exploits);
+                goto opt;
+            }
+            else{
+                printf("\nSearchsploit is not installed.\n"
+                        "Please read the documentation or do a manual installation from https://www.exploit-db.com/searchsploit\n");
+                printf("\n\n<< press any key to go back");
+                fgetc(stdin);
+            }
             //free_exploits(exploits);
             break;
             
         case 1:
             system("clear");
-            printf("Search exploit: ");
-            char in[20];
-            fgets(in, 20 , stdin);
-            exploits = search_exploit(in);
-            goto opt;
-            //free_exploits(exploits);
+            if( (access( "/bin/searchsploit", F_OK ) == 0 ) || (access( "/sbin/searchsploit", F_OK ) == 0)) {
+                printf("Search exploit: ");
+                char in[20];
+                fgets(in, 20 , stdin);
+                exploits = search_exploit(in);
+                goto opt;
+                //free_exploits(exploits);
+            }else{
+                printf("\nSearchsploit is not installed.\n"
+                        "Please read the documentation or do a manual installation from https://www.exploit-db.com/searchsploit\n");
+                printf("\n\n<< press any key to go back");
+                fgetc(stdin);
+            } 
+                
             break;
         
         case 2:
@@ -136,7 +152,6 @@ void exploits_menu(struct sys_inf *system_info){
             //free_exploits(exploits);
             break;
     }  
-    
     opt:
         if(exploits->len == 0)
             return;
