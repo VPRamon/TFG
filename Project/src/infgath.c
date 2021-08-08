@@ -6,22 +6,12 @@
 
 
 struct cpu_flags get_cpu_flags(){
-    FILE * fp;
-    char * line = NULL;
     
-    fp = fopen("/proc/cpuinfo", "r");
-    if (fp == NULL)
-        exit(EXIT_FAILURE);
-    
-    char name[32], buffer[2048];
-    while(fscanf(fp, "%[^:]:%[^\n]\n", name, buffer)!=EOF){
-        if(!strncmp(name,"flags", sizeof("flags")-1 ))
-            break;
-    }
-    
+    char *flags_buff = search("flags\t\t: ", "/proc/cpuinfo");
+      
     struct cpu_flags flags = {false, false, false, false, false, false, false, false, false};
     
-    char *flag = strtok(buffer, " ");
+    char *flag = strtok(flags_buff, " ");
     while( flag != NULL ) {
         if(!strncmp(flag, "smep", sizeof("smep")-1))
             flags.smep = true;
@@ -44,29 +34,19 @@ struct cpu_flags get_cpu_flags(){
         
         flag = strtok(NULL, " ");
     }
-    fclose(fp);
+    
+    free(flags_buff);
     return flags;
 }
 
 struct cpu_bugs get_cpu_bugs(){
-    FILE * fp;
-    char * line = NULL;
     
-    fp = fopen("/proc/cpuinfo", "r");
-    if (fp == NULL)
-        exit(EXIT_FAILURE);
-    
-    char name[32], buffer[2048];
-    
-    while(fscanf(fp, "%[^:]:%[^\n]\n", name, buffer)!=EOF){
-        if(!strncmp(name,"bugs", sizeof("bugs")-1 ))
-            break;
-    }
+    char *bugs_buff = search("bug", "/proc/cpuinfo");
     
     struct cpu_bugs bugs = {false, false, false, false, false, false, false, false, false, 
                             false, false, false, false, false, false, false, false, false};
     
-    char * bug = strtok(buffer, " ");
+    char * bug = strtok(bugs_buff, " ");
     while( bug != NULL ) {
         if(!strncmp(bug, "f00f", sizeof("f00f")-1))
             bugs.f00f = true;
@@ -107,7 +87,8 @@ struct cpu_bugs get_cpu_bugs(){
         
         bug = strtok(NULL, " ");
     }
-    fclose(fp);
+    
+    free(bugs_buff);
     return bugs;
 }
 

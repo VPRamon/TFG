@@ -78,3 +78,47 @@ char *read_stdin(){
 
     return realloc(str, sizeof(*str)*len);
 }
+
+char *search(char *string, char *filename){
+    FILE* fp = fopen(filename, "r");
+    if (fp == NULL)
+        exit(EXIT_FAILURE);
+   
+    size_t size = strlen(string);
+    size_t len = 0;
+    int ch;    
+    char string_tmp[size+1];
+    while(EOF!=(ch=fgetc(fp)) && ch != '\n'){
+        string_tmp[len++]=ch;
+        
+        if(len==size){
+            if(!strncmp(string, string_tmp,size)){
+                
+                //return line;
+                size = 10;
+                len = 0;
+                char *str;
+                str = realloc(NULL, sizeof(*str)*size);
+                if(!str)return str;
+                while(EOF!=(ch=fgetc(fp)) && ch != '\n'){
+                    str[len++]=ch;
+                    if(len==size){
+                        str = realloc(str, sizeof(*str)*(size+=16));
+                        if(!str)return str;
+                    }
+                }
+                str[len++]='\0';
+                fclose(fp);
+                
+                return realloc(str, sizeof(*str)*len);
+            
+            }
+                //jump to new line
+            len = 0;
+            while(EOF!=(ch=fgetc(fp)) && ch != '\n'){} 
+                        
+        }
+    }
+    puts("ERROR::function search\t value not found");
+    exit(0);
+}
