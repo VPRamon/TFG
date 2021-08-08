@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "display.h"
 #include "infgath.h"
@@ -90,27 +91,26 @@ void display_network_info(){
     printf("##########################################\n"
            "################  NETWORK  ###############\n"
            "##########################################\n");
-    char* out;
-    out = system_cmd("which ifconfig", 100);
-    if(strcmp(out, "")){
+    
+    if( access( "/sbin/ifconfig", F_OK ) == 0 ) {
         printf("\n[*] Interfaces:\n\n");
         system("/sbin/ifconfig -a");
     }
-    free(out);
+    else{
+        printf("\nCommand 'ifconfig' not found, but can be installed with:\n"
+                "sudo apt install net-tools");
+    }
     
-    out = system_cmd("which route", 100);
-    if(strcmp(out, "")){
+    if( access( "/sbin/route", F_OK ) == 0 ) {
         printf("\n[*] Routes:\n\n");
         system("route");
     }
-    free(out);
     
-    out = system_cmd("which netstat", 100);
-    if(strcmp(out, "")){
+    if( access( "/bin/netstat", F_OK ) == 0 ) {
         printf("\n[*] Netstat:\n\n");
         system("netstat -antup | grep -v 'TIME_WAIT'");
     }
-    free(out);
+    
 }
 
 void display_device(struct device dev){
