@@ -121,6 +121,10 @@ struct device{
     char gr_name[50];
 };
 
+void sys_info_menu(struct sys_inf *system_info);
+void net_info_menu();
+void dev_info_menu(list *devices);
+void mod_info_menu();
 //void get_system_info(struct system_info *sys_inf);
 struct proc *get_proccessor_info();
 

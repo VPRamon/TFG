@@ -20,34 +20,6 @@
  * 
  */
 
-void sys_info_menu(struct sys_inf *system_info){
-    system("clear");
-    display_sys_info(system_info);
-    printf("\n\n<< press any key to go back");
-    fgetc(stdin);
-}
-
-void net_info_menu(){
-    system("clear");
-    display_network_info();
-    printf("\n\n<< press any key to go back");
-    fgetc(stdin);
-}
-
-void dev_info_menu(list *devices){
-    system("clear");
-    display_devices(devices);
-    printf("\n\n<< press any key to go back");
-    fgetc(stdin);
-}
-
-void mod_info_menu(){
-    system("clear");
-    display_modules();
-    printf("\n\n<< press any key to go back");
-    fgetc(stdin);
-}
-
 void fuzzer_menu(){
     system("clear");
     printf("First you must give some information about the device to be fuzzed.\n"
@@ -81,140 +53,12 @@ void fuzzer_menu(){
     free(input);
 }
 
-void exploits_menu(struct sys_inf *system_info){
-    
-    system("clear");
-    printf("[0] Default search\n"
-           "[1] Personalized Search\n"
-           "[2] Load exploit");
-    
-    list *exploits = new_list();
-    char *input;
-    int _input;
-    printf("\n>> Select an option [0-%d]: ", 2);
-    input = read_stdin();
-    _input = valid_input(input[0], 3);
-    free(input);
-    switch(_input){
-        case 0:
-            system("clear");
-            if( (access( "/bin/searchsploit", F_OK ) == 0 ) || (access( "/sbin/searchsploit", F_OK ) == 0)) {
-                char *r = parse_release(system_info->u_name->release);
-                exploits = search_exploit(r);
-                display_exploits(exploits);
-                goto opt;
-            }
-            else{
-                printf("\nSearchsploit is not installed.\n"
-                        "Please read the documentation or do a manual installation from https://www.exploit-db.com/searchsploit\n");
-                printf("\n\n<< press any key to go back");
-                fgetc(stdin);
-            }
-            //free_exploits(exploits);
-            break;
-            
-        case 1:
-            system("clear");
-            if( (access( "/bin/searchsploit", F_OK ) == 0 ) || (access( "/sbin/searchsploit", F_OK ) == 0)) {
-                printf("Search exploit: ");
-                char in[20];
-                fgets(in, 20 , stdin);
-                exploits = search_exploit(in);
-                goto opt;
-                //free_exploits(exploits);
-            }else{
-                printf("\nSearchsploit is not installed.\n"
-                        "Please read the documentation or do a manual installation from https://www.exploit-db.com/searchsploit\n");
-                printf("\n\n<< press any key to go back");
-                fgetc(stdin);
-            } 
-                
-            break;
-        
-        case 2:
-            system("clear");
-            printf("Give the path to the exploit: ");
-            char path[100];
-            fgets(path, 100 , stdin);
-            char *dir = strtok(path, "\n");
-            while(access( dir, F_OK ) != 0 ) {
-                puts(dir);
-                printf("Exploit not found! Make sure the path is correct and try again [q/quit]: ");
-                fgets(path, 50 , stdin);
-                dir = strtok(path, "\n");
-                if(path[0] == 'q')
-                    return;
-            }
-            
-            exploits = new_list();
-            load_exploit(exploits, path);
-            goto opt;
-            //free_exploits(exploits);
-            break;
-    }  
-    opt:
-        if(exploits->len == 0)
-            return;
-        system("clear");
-        display_exploits(exploits);
-        printf("\n>> Pick exploit [0-%d]/[q]: ", exploits->len-1);
-        char index[5];
-        fgets(index, 5 , stdin);
-
-        if(index[0] == 'q')
-            return;
-
-        element *el = get_element_from_list(exploits, atoi(index));
-        struct exploit *xplt = (struct exploit *)el->content; 
-
-
-        printf("\n\n[0] View exploit\n"
-               "[1] Edit exploit\n"
-               "[2] Change exploit\n"
-               "[3] Run exploit\n"
-               "[q] Quit\n");            
-
-        printf("\n>> Select an option [0-%d]: ", 3);
-        fgets(input, 10 , stdin);
-        if(input[0] == 'q')
-            return;
-        _input = valid_input(input[0], 4);
-
-
-        switch(_input){
-            case 0:
-                system("clear");
-                display_exploit(xplt);
-                printf("\n\n<< press any key to go back");
-                fgetc(stdin);
-                goto opt;
-                break;
-
-            case 1:
-                system("clear");
-                edit_exploit(xplt);
-                goto opt;
-                break;
-
-            case 2:
-                goto opt;
-                break;
-            
-            case 3:
-                run_exploit(xplt);
-                //goto opt;
-                break;
-        }
-    
-        printf("\n\n<< press any key to go back");
-        fgetc(stdin);
-}
 
 void menu(struct sys_inf *system_info){
+    
     char *input;
     int _input;
-    
-    list *devices;
+    list *devices = new_list();;
     
     while(true){
         system("clear");
@@ -249,7 +93,6 @@ void menu(struct sys_inf *system_info){
                 break;
                 
             case RUNNING_DEVICES:
-                devices = new_list();
                 scan_active_devices(devices);
                 dev_info_menu(devices);
                 break;
@@ -259,14 +102,11 @@ void menu(struct sys_inf *system_info){
                 break;
 
             case EXPLOIT:
-                //r = parse_release(system_info->u_name->release);
-                //exploits = search_exploit(r);
                 exploits_menu(system_info);
                 break;
              
             case EXIT_MENU:
                 exit(0);
-                break;
 
             default:
                 system("clear");
@@ -278,16 +118,10 @@ void menu(struct sys_inf *system_info){
     }
 }
 
-
 int main(int argc, char** argv) {
-    //start_fuzzing();
    
     struct sys_inf *system_info = get_system_info();
-    
-    //list *tools = new_list();
-    //scan_installed_tools(tools);
-    //display_installed_tools(tools);
-    
+       
     menu(system_info);
     
     return (EXIT_SUCCESS);

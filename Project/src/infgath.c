@@ -3,6 +3,36 @@
 #include <string.h>
 #include "infgath.h"
 #include "utils.h"
+#include "display.h"
+
+
+void sys_info_menu(struct sys_inf *system_info){
+    system("clear");
+    display_sys_info(system_info);
+    printf("\n\n<< press any key to go back");
+    fgetc(stdin);
+}
+
+void net_info_menu(){
+    system("clear");
+    display_network_info();
+    printf("\n\n<< press any key to go back");
+    fgetc(stdin);
+}
+
+void dev_info_menu(list *devices){
+    system("clear");
+    display_devices(devices);
+    printf("\n\n<< press any key to go back");
+    fgetc(stdin);
+}
+
+void mod_info_menu(){
+    system("clear");
+    display_modules();
+    printf("\n\n<< press any key to go back");
+    fgetc(stdin);
+}
 
 
 struct cpu_flags get_cpu_flags(){
@@ -93,78 +123,84 @@ struct cpu_bugs get_cpu_bugs(){
 }
 
 struct sys_inf *get_system_info(){
+    
     struct sys_inf *system_info = (struct sys_inf *)malloc(sizeof(struct sys_inf));
     struct utsname *u_name = (struct utsname *)malloc(sizeof(struct utsname));
-    int r = uname(u_name);
+    
+    int r = uname(u_name);    
     if(r == -1)
     {
-            fprintf(stderr,"%s:uname(2)\n",strerror(errno));
-            exit(1);
+        fprintf(stderr,"%s:uname(2)\n",strerror(errno));
+        exit(1);
     }
+    
     system_info->u_name = u_name;
     
     char *tmp;
-    char tmp1[100], tmp2[100];
-    size_t tmp1_len = sizeof(tmp1)/sizeof(tmp1[0]);
-    size_t tmp2_len = sizeof(tmp2)/sizeof(tmp2[0]);
-    
-    
-    tmp = system_cmd("lscpu | grep '^CPU(s)'", 100);
-    if( tmp1_len < strlen(tmp) || tmp2_len < strlen(tmp) ){
-        puts("ERROR:: overflow attempt at get_system_info. (char tmp)");
-        exit(1);
-    }
-    sscanf(tmp, "%[^:]:%s", tmp1, tmp2);
-    system_info->_cpu.num_of_cpus = atoi(tmp2);
-    free(tmp);
+    size_t len;
         
-    tmp = system_cmd("lscpu | grep -E '^Core'", 100);
-    if( tmp1_len < strlen(tmp) || tmp2_len < strlen(tmp) ){
-        puts("ERROR:: overflow attempt at get_system_info. (char tmp)");
-        exit(1);
+    tmp = system_cmd("lscpu | grep '^CPU(s)'", 100);
+    len = strlen(tmp);
+    {        
+        char buff_name[len];
+        char buff_value[len];
+        sscanf(tmp, "%[^:]:%s", buff_name, buff_value);
+
+        // CHECK IF INTEGER VALUES !!
+        system_info->_cpu.num_of_cpus = atoi(buff_value);
     }
-    sscanf(tmp, "%[^:]:%s", tmp1, tmp2);
-    system_info->_cpu.num_of_cores = atoi(tmp2);
+    free(tmp);
+    
+    tmp = system_cmd("lscpu | grep -E '^Core'", 100);
+    len = strlen(tmp);
+    {
+        char buff_name[len];
+        char buff_value[len];
+        sscanf(tmp, "%[^:]:%s", buff_name, buff_value);
+        system_info->_cpu.num_of_cores = atoi(buff_value);
+    }
     free(tmp);
     
     
     tmp = system_cmd("lscpu | grep -E '^Thread'", 100);
-    if( tmp1_len < strlen(tmp) || tmp2_len < strlen(tmp) ){
-        puts("ERROR:: overflow attempt at get_system_info. (char tmp)");
-        exit(1);
-    }
-    sscanf(tmp, "%[^:]:%s", tmp1, tmp2);
-    system_info->_cpu.threadsXcore = atoi(tmp2);
+    len = strlen(tmp);
+    {
+        char buff_name[len];
+        char buff_value[len];
+        sscanf(tmp, "%[^:]:%s", buff_name, buff_value);
+        system_info->_cpu.threadsXcore = atoi(buff_value);
+    } 
     free(tmp);
     
     
     tmp = system_cmd("lscpu | grep -E '^Socket'", 100);
-    if( tmp1_len < strlen(tmp) || tmp2_len < strlen(tmp) ){
-        puts("ERROR:: overflow attempt at get_system_info. (char tmp)");
-        exit(1);
+    len = strlen(tmp);
+    {
+        char buff_name[len];
+        char buff_value[len];
+        sscanf(tmp, "%[^:]:%s", buff_name, buff_value);
+        system_info->_cpu.num_of_sockets = atoi(buff_value);
     }
-    sscanf(tmp, "%[^:]:%s", tmp1, tmp2);
-    system_info->_cpu.num_of_sockets = atoi(tmp2);
     free(tmp);
-    
     
     tmp = system_cmd("lscpu | grep -E '^Architecture'", 100);
-    if( tmp1_len < strlen(tmp) || tmp2_len < strlen(tmp) ){
-        puts("ERROR:: overflow attempt at get_system_info. (char tmp)");
-        exit(1);
+    len = strlen(tmp);
+    {
+        char buff_name[len];
+        char buff_value[len];
+        sscanf(tmp, "%[^:]:\t%[^\n]\n", buff_name, buff_value);
+        memcpy(system_info->_cpu.arch, buff_value, 16);
     }
-    sscanf(tmp, "%[^:]:\t%[^\n]\n", tmp1, tmp2);
-    memcpy(system_info->_cpu.arch, tmp2, 16);
     free(tmp);
     
-    
     tmp = system_cmd("lscpu | grep -E '^Model name'", 100);
-    if( tmp1_len < strlen(tmp) || tmp2_len < strlen(tmp) ){
-        puts("ERROR:: overflow attempt at get_system_info. (char tmp)");
-        exit(1);
+    len = strlen(tmp);
+    {
+        char buff_name[len];
+        char buff_value[len];
+        sscanf(tmp, "%[^:]:\t%[^\n]\n", buff_name, buff_value);
+        memcpy(system_info->_cpu.model, buff_value, 100);
     }
-    sscanf(tmp, "%[^:]:\t%[^\n]\n", tmp1, tmp2);
-    memcpy(system_info->_cpu.model, tmp2, 100);
     free(tmp);
     
 

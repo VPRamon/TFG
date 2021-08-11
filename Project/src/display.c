@@ -169,6 +169,7 @@ void display_installed_tools(list *tools){
 }
 
 void display_exploits(list *exploits){
+    system("clear");
     printf( "##########################################\n"
             "###############  EXPLOITS  ###############\n"
             "##########################################\n\n");
